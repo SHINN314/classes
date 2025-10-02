@@ -1,0 +1,120 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義11宿題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \hspace{1em}まず与えられた\(\text{DFA}\ A = (Q,\Sigma,\delta,q_0,F)\)に対して等価性を判定した結果をまとめた表を以下に示す。
+
+    \begin{table}[H]
+      \begin{center}
+        \caption{状態の等価性の判定結果}
+        \label{table_state_equality}
+        \begin{tabular}{c|ccccccccc} \hline
+            & B & C           & D          & E           & F           & G           & H           & I           \\ \hline
+          A & 0 & \(\lambda\) &            & 0           & \(\lambda\) &             & 0           & \(\lambda\) \\
+          B &   & \(\lambda\) & 0          &             & \(\lambda\) & 0           &             & \(\lambda\) \\
+          C &   &             & \(\lambda\)& \(\lambda\) &             & \(\lambda\) & \(\lambda\) &             \\
+          D &   &             &            & \(\lambda\) & \(\lambda\) &             & 0           & \(\lambda\) \\
+          E &   &             &            &             & \(\lambda\) & 0           &             & \(\lambda\) \\
+          F &   &             &            &             &             & \(\lambda\) & \(\lambda\) &             \\
+          G &   &             &            &             &             &             & 0           & \(\lambda\) \\
+          H &   &             &            &             &             &             &             & \(\lambda\) \\ \hline
+        \end{tabular}
+      \end{center}
+    \end{table}
+
+    \hspace{1em}次に表\ref{table_state_equality}の作成過程を示す。
+    表の作成は以下のアルゴリズムに沿って行った。
+
+    \begin{enumerate}
+      \item 状態の組\((p, q)\)、入力した文字列\(w \in \Sigma^{*}\)(初期値\(\lambda\))の情報を持つ要素\(\{(p, q), w\}\)をすべての状態の組み合わせに対して用意し、用意した要素をキューに入れる。
+      \item キューの要素がなくなるまで以下の操作を続ける。
+      \begin{enumerate}
+        \item キューの先頭の要素を取り出す
+        \item \(\delta(\delta(p, w), \delta(q, w))\)に対して次のことについて調べる
+        \begin{enumerate}
+          \item \(\delta(p, w) = \delta(q, w)\)であるか調べる。この等式を満たす場合は表に何も記入せず手順(a)に戻る。
+          \item \(\delta(p, w) = p \land \delta(q, w) = q\)もしくは\(\delta(p, w) = q \land \delta(q, w) = p\)のいずれかを満たすか調べる。もしこの条件を満たす場合は表に何も記入せず手順(a)に戻る。
+          \item \(\delta(p, w)\)と\(\delta(q, w)\)が帰納的等価性判定アルゴリズムの基底に基づいて区別できるか調べる。区別できる場合は表の\((p, q)\)対応する要素に文字列\(w\)を記入して、手順(a)に戻る。
+          \item \((\delta(p, w), \delta(q, w))\)または\((\delta(q, w), \delta(p, w))\)に対応する表の要素を見て、文字列\(w^{'}\)が書いていたら\((p, q)\)に対応する要素に文字列\(w + w^{'}\)を記入して手順(a)に戻る
+        \end{enumerate}
+        \item 要素\(\{(p, q), w + 0\}\)と\(\{(p, q), w + 1\}\)をキューの末尾に追加して手順(a)に戻る。
+      \end{enumerate}
+    \end{enumerate}
+
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

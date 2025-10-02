@@ -1,0 +1,13 @@
+\section{問1}
+\hspace{1em}\(\hat{\beta_0}\)が不偏推定量であることを示すには\(\mathbb{E}[\hat{\beta_0}] = \beta_0\)であることを示せば良い。
+以下、この式が成立することを証明する。
+
+\begin{align}
+    \mathbb{E}[\hat{\beta_0}]   &= \frac{1}{n}\sum_{i=1}^{n}\mathbb{E}[y_i] - \mathbb{E}[\hat{\beta_1} \overline{x}] \ \text{(\(\hat{\beta_0} = y_i - (\hat{\beta_1} x_i + \varepsilon_i)\)であることを利用)} \\
+                                &= \frac{1}{n}\sum_{i=1}^{n}(\beta_0 + \beta_1 x_i) - \frac{1}{n}\sum_{i=1}^{n}(\mathbb{E}[\beta_1 x_i] + \mathbb{E}[(\sum_{j=1}^{n}w_j \varepsilon_j)x_i]) \ \text{(\(\hat{\beta_1} = \beta_1 + \sum_{i=1}^{n}w_i \varepsilon_i\)であることを利用)} \\
+                                &= \beta_0 + \beta_1 \overline{x} - \beta_1 \overline{x} \label{equation_mean_rho_3} \\
+                                &= \beta_0
+\end{align}
+
+\noindent ここで、式\ref{equation_mean_rho_3}では\(w_j\)と\(x_i\)が定数であることを利用して\(\sum_{j=1}^{n}w_j x_i \mathbb{E}[\varepsilon_j] = 0\)と式変形した。
+以上より\(\hat{\beta_0}\)の不偏性が証明された。

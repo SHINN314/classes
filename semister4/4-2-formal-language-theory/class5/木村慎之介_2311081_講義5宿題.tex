@@ -1,0 +1,102 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義5宿題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    まず与えられたDFA $A = (Q, \Sigma, \delta, q_0, F)$の状態の集合$Q$から
+    任意に要素$p,q$を選ぶ。次に、言語$L = \{w \in \Sigma^{*} | \hat{\delta}(p, w) = q \}$を
+    受理する$\lambda$遷移付きNFA $A^{'} = (Q^{'}, \Sigma^{'}, \delta^{'}, q_{0}^{'}, F^{'})$
+    を以下のように定義する。ただし、$\hat{\delta}$はDFA $A$の拡張状態遷移関数であることに注意する。 \\ \indent
+    まず$Q^{'}, \Sigma^{'}, q_0^{'}, F^{'}$をそれぞれ$Q^{'} = Q,\Sigma{'} = \Sigma,q_0^{'} = p,F^{'} = \{ q \}$
+    と定義する。次に状態遷移関数$\delta^{'}$を$\delta^{'}: (q, a) \in Q \times \Sigma \mapsto \{ \delta(q, a) \} \in 2^{Q}$
+    のように定義する。ここで状態遷移関数$\delta^{'}$をこのように定義することで$\delta^{'}$の拡張状態遷移関数$\hat{\delta}^{'}$が
+    $\hat{\delta}^{'}(q,wa) = \{\hat{\delta}(q, wa)\}$であることを入力文字列の文字数に関する数学的帰納法により
+    証明する。 \\ \indent
+    (基底)文字数が$0$文字、すなわち入力文字が$\lambda$である時、$\lambda$遷移付きNFA $A^{'}$の拡張状態遷移関数の定義から
+    $\hat{\delta}^{'}(q, \lambda) = \text{LCLOSE}(q)$となる。ここで$\delta^{'}(q, \lambda) = \{ \delta(q, \lambda) \} = \{ q \}$
+    であることがDFA $A$の状態遷移関数の定義から分かるので$\hat{\delta}^{'}(q, \lambda) = \{ q \} = \{ \hat{\delta}(q, \lambda) \}$
+    が示される。 \\ \indent
+    (帰納ステップ)入力文字が$w(w \in \Sigma^{*}, |w| = k)$のときに$\hat{\delta}^{'}(q, w) = \{ \hat{\delta}(q, w) \}$が成立すると仮定して
+    入力文字が$wa(a \in \Sigma)$のときを考える。この時仮定したことと、DFA $A$の拡張状態遷移関数の定義から$\delta^{'}(\hat{\delta}(q, w), a) = \{ \delta(\hat{\delta}(q, w), a) \} = \{ \hat{\delta}(q, wa) \}$であることを利用すると、$\lambda$遷移付きNFA $A^{'}$の拡張状態遷移関数の定義より
+    $\hat{\delta}^{'}(q, wa) = \text{LCLOSE}(\hat{\delta}(q, wa)) = \{ \hat{\delta}(q, wa) \}$となる。 \\ \indent
+    以上より$\hat{\delta}^{'}(q, wa) = \{ \hat{\delta}(q, wa) \}$が示された。\\ \indent
+    最後に数学的帰納法を用いて証明した命題を利用して、設計した$\lambda$遷移付きNFA $A^{'}$が言語$L$を受理することを示す。
+    $w \in L$の時、$\hat{\delta}^{'}(p, w) = \{ \hat{\delta}(p, w) \} = \{ q \}$であるため$\hat{\delta}^{'}(p, w) \cap F^{'} \neq \emptyset$となり
+    $w \in L(A^{'})$が示される。また$w \notin L$の時$\hat{\delta}^{'}(p, w) = \{ \hat{\delta}(p, w) \neq q \}$であるため$\hat{\delta}^{'}(p, w) \cap F^{'} = \emptyset$となり
+    $w \notin L(A^{'})$が示される。したがって$L$を受理する$\lambda$遷移付きNFAが存在することを示せたので$L$は正則である。
+
+
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

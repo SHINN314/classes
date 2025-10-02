@@ -1,0 +1,149 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{float}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+\setlength{\textwidth}{175mm}
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{250mm}
+\setlength{\topmargin}{-10mm}
+\setlength{\oddsidemargin}{-3.5mm}
+\setlength{\hoffset}{-2.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論レポート (英語論文読解)}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{1}
+        オートマトンの入力データと生体高分子の類似性を利用して作られた、DNAとDNA操作酵素から構成される自動で計算問題を解くプログラム可能な有限オートマトンについての説明。(87文字)
+
+    \section*{2}
+        \subsection*{(a)}
+            \hspace{1em}これらのプログラムでは\(2\)状態DFAで受理されるすべての言語が考慮されているとは言えない。
+            考慮されていない言語とは\(|\Sigma| \geq 3\)となる\(\Sigma\)上での\(2\)状態DFAで受理される言語である。
+
+        \subsection*{(b)}
+            \hspace{1em}完全性DFAを構築するには任意の状態において、\(\Sigma\)上の任意の文字を受け取ったときの遷移先が一意に決まっている必要がある。
+            論文中の図1cによると、8つの各状態において\(\Sigma\)上の各文字の遷移先の候補は2種類ずつ存在する。
+            終了状態がのパターンが3つあることを考慮すれば、完全性DFAの種類は\(2 \times 2 \times 2 \times 2 \times 3 = 48\)個である。
+
+    \section*{3}
+        \hspace{1em}A7と等価な3状態不完全性DFA\(\ A = (Q, \Sigma, \delta, q_0, F)\)を次のように定義する。
+        まず\(Q\)、\(\Sigma\)、\(q_0\)、\(F\)について\(Q = \{S_0, S_1, S_2\}\)、\(\Sigma = \{a, b\}\)、\(q_0 = S_0\)、\(F = \{S_2\}\)と定義する。
+        次に状態遷移関数\(\delta\)を以下の表のように定義する。
+
+        \begin{table}[H]
+            \begin{center}
+                \caption{不完全性DFA\ \(A\)の状態遷移関数\(\delta\)の遷移表}
+                \begin{tabular}{cccc} \hline
+                    現在の状態   & 入力した文字 & 遷移先の状態  \\ \hline
+                    \(S_0\) & \(a\)  & \(S_1\) \\
+                    \(S_1\) & \(a\)  & \(S_1\) \\
+                    \(S_1\) & \(b\)  & \(S_2\) \\
+                    \(S_2\) & \(a\)  & \(S_1\) \\
+                    \(S_2\) & \(b\)  & \(S_2\) \\ \hline
+                \end{tabular}
+            \end{center}
+        \end{table}
+
+        \hspace{1em}以上の不完全性DFAが題意を満たすものとなる。
+
+    \section*{4}
+        \subsection*{(a)}
+            \hspace{1em}FokIは2本鎖DNAの上の鎖がGGATGとなる認識部位に反応してDNAの鎖を断ち切る働きを持つ。
+            より具体的には、上の鎖でにおいては認識部位の下流の先頭ヌクレオチド(G)から下流方向に向かって9個先のヌクレオチドを境界として、それ以降のDNAとの2つに分けるように断ち切る。
+            また、下の鎖においては認識部位の上流の先頭ヌクレオチド(C)から上流方向に向かって13個先のヌクレオチドを境界として、それ以降のDNAとの2つに分けるようを断ち切る。
+        
+        \subsection*{(b)}
+            \hspace{1em}先に述べたようにFokIは上の鎖を認識部位の先頭から9個先を境界とし、それ以降のDNAとの2つに分けるように切断する。
+            ここで、6組のヌクレオチドを用いて周期的に状態を表していることから、切断時に状態を変化させないためには6組のヌクレオチドの組に加えてちょうど3組のヌクレオチドの組が必要である。
+            したがって、状態遷移しないときは緑色の部分の長さが3となっている。
+            逆に状態を\(S_0 \to S_1\)、\(S_1 \to S_0\)に変化させるには上の鎖の上流方向にそれぞれ\(-2\)、\(+2\)分周期をずらす必要があり、それぞれ緑色の部分の長さを\(3 + 2 = 5\)と\(3 - 2 = 1\)することで周期のずれを実現している。
+
+    \section*{5}
+        \subsection*{(a)}
+            \hspace{1em}核酸などの生体分子は電場のかかっている高分子ハイドロゲル中において分子のサイズが大きくなるほどゲル中を泳動する距離が大きくなる。
+            ゲル電気泳動ではこの性質を利用して、分子サイズに応じて分子を分離・分析を行う方法である。\cite{bi:1}
+
+        \subsection*{(b)}
+            \hspace{1em}到達状態が確定し、それに対応する出力検出分子が入力分子と結合をすると、結合前よりも分子サイズが大きくなりゲル電気泳動における移動度も小さくなる。
+            これによってゲル電気泳動で分類される出力検出分子の数が減るため、ゲル電気泳動において分類した2つの出力検出分子のうち減っているほうを到達した状態と判別することができる。
+
+    \section*{6}
+        \subsection*{(a)}
+            \hspace{1em}まず、4つのDNA粘着末端の総パターンは、一つのヌクレオチドに対して4通りのパターンがあることから\(4^{4} = 256\)通り存在する。
+            次にpalindromicな粘着末端の総パターンを求める。
+            DNAの相補性とpalindromicの性質を利用すると、4つのヌクレオチドのうち片方の端のヌクレオチドが決定すればもう片方の端のヌクレオチドは一意に決定する。
+            同様に間の2つのヌクレオチドに関しても、片方のヌクレオチドが決定すればもう一方のヌクレオチドも一意に決定する。
+            この事実からpalindromicな粘着末端の総パターンは\(4 \times 4 = 16\)通りとなる。
+            したがってpalindromicでない粘着末端の総パターンは\(256 - 16 = 240\)通りとなる。
+
+        \subsection*{(b)}
+            \hspace{1em}palindromicな粘着末端を利用して論文中のオートマトンを構成しようとすると、同じpalindromicな塩基配列の粘着末端をもつ入力分子同士が結合してしまう可能性が出てくる。
+            このとき、結合した分子にはFokIの認識部位が存在せずこれ以上切断ができないため、意図しない方法でプログラムが終了してしまう。
+            よって、palindromicな粘着末端を利用することはできない。
+
+
+    \begin{thebibliography}{99}
+        \bibitem{bi:1} 公益社団法人 高分子学会. "公益社団法人 高分子学会". ゲル電気泳動(Gel Electrophresis) - 高分子学会. \url{https://www.spsj.or.jp/equipment/news/news_detail_36.html}, (2024-12-04)
+    \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

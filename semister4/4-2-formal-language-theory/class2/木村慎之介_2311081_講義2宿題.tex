@@ -1,0 +1,98 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+\setlength{\parindent}{1em}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義2課題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section{チューリングマシンの設計方針}
+      \hspace{1em}今回設計したチューリングマシンでは「入力した文字列を作業テープに書き込む操作」と「作業テープで入力された文字列が回文か判定する操作」の
+      2つに分けて作成した。以下この2つの操作について具体的に説明する。
+
+    \subsection{入力した文字列を作業テープに書き込む操作}
+      \hspace{1em}まず入力テープに指されているセルの文字を読み取る。次に作業テープに入力テープから読み取った文字を書き込み、
+      作業テープに指すセルを一つ右に進める。その後入力テープに指されるセルを一つ右に進める。もし、このとき入力
+      されている文字がなかったら回文判定に移る。
+
+    \subsection{作業テープで入力された文字列が回文か判定する操作} \indent
+      \hspace{1em}まず作業テープに記憶されている文字列の一番右の文字を記憶する。同時に、一番右の文字が格納されているセルに空文字列
+      を書き込む。このとき、記憶した文字が空文字列だった場合は、操作を終了して作業テープにある文字列を返す。 \\ \indent
+      次に、空文字列を読み込むまで作業テープを指すセルを一つずつ左に動かしながらセルの文字を読み取っていく。もし空文字
+      列の右の文字(つまり左端の文字)が記憶した文字と異なっていた場合は、操作を終了し作業テープの文字列を返す。一方記憶
+      した文字と同じ場合は作業テープを指しているセルを一つ右に移動させ、そのセルにから文字列を書き込む。そして、再度空
+      文字列に当たるまで作業テープの指すセルを右に移動させていく。 \\ \indent
+      以降、操作が停止するまで文字列の右端の文字を記憶するところからの一連の手順を行う。 \\ \indent
+      最後に、返された文字列が空文字列の場合に回文であると判定し、空文字列でなければ回文でないと判定する。
+    
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

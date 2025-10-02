@@ -1,0 +1,113 @@
+\section{問5}
+\subsection{(1)}
+
+\hspace{1em}\((\theta_1^{(t)}, \theta_2^{(t)})\)から\((\theta_1^{(t+1)}, \theta_2^{(t+1)})\)への遷移は下図のように行われる。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=3cm and 4cm,
+    every node/.style={align=center, font=\large},
+    state/.style={circle, draw, minimum size=1.5cm, font=\large},
+    arrow/.style={->, >=stealth, very thick}
+]
+
+% 状態ノード定義
+\node[state] (state1) {$(\theta_1^{(t)}, \theta_2^{(t)})$};
+\node[state, right=of state1] (state2) {$(\theta_1^{(t+1)}, \theta_2^{(t)})$};
+\node[state, right=of state2] (state3) {$(\theta_1^{(t+1)}, \theta_2^{(t+1)})$};
+
+% 状態ラベル
+\node[below=0.3cm of state1] {\textbf{状態1}};
+\node[below=0.3cm of state2] {\textbf{状態2}};
+\node[below=0.3cm of state3] {\textbf{状態3}};
+
+% 遷移矢印と確率
+\draw[arrow] (state1) -- node[above] {$P(\theta_1|\theta_2^{(t)}, \bm{x})$} (state2);
+\draw[arrow] (state2) -- node[above] {$\alpha T(\theta_2|\theta_2^{(t)})$} (state3);
+
+% 自己ループ（棄却の場合）
+\draw[arrow] (state2) to[out=45, in=135, looseness=3] node[above] {$r(\theta_2^{(t)})$} (state2);
+
+% 採択確率の定義
+\node[below=1.5cm of state2, font=\normalsize] (formula) {
+ここで $\alpha = \min\left\{1, \frac{P(\theta_2'|\theta_1^{(t+1)}, \bm{x})T(\theta_2^{(t)}|\theta_2')}{P(\theta_2^{(t)}|\theta_1^{(t+1)}, \bm{x})T(\theta_2'|\theta_2^{(t)})}\right\}$\\
+$r(\theta_2^{(t)}) = \int T(\theta_2'|\theta_2^{(t)})(1-\alpha(\theta_2', \theta_2^{(t)}))d\theta_2'$
+};
+
+\end{tikzpicture}
+\caption{MCMCの状態遷移図}
+\end{figure}
+
+\noindent したがって遷移核は
+
+\begin{align}
+    Q(\theta_1^{(t + 1)}, \theta_2^{(t + 1)} | \theta_1^{(t)}, \theta_2^{(t)})  &= P(\theta_1^{(t+1)} | \theta_2^{(t)}, \bm{x}) \alpha T(\theta'_2 | \theta_2^{(t)}) \ \text{(ただし\(\theta_2' \neq \theta_2^{(t)}\)のとき)} \\
+                                                                                &= P(\theta_1^{(t+1)} | \theta_2^{(t)}, \bm{x}) r(\theta_2^{(t)}) \ \text{(ただし\(\theta_2' = \theta_2^{(t)}\)のとき)}
+\end{align}
+
+\noindent となる。
+
+\subsection{(2)}
+\hspace{1em}状態1から状態2へ遷移するときと、状態2から状態3へ遷移するときそれぞれで詳細釣り合い条件が成立することを示し、それらを持って全体の遷移において詳細釣り合い条件
+なお、今回は状態2から状態2へ遷移することは\(\alpha = 1\)であることからありえないので除外して考える。
+
+\subsubsection{状態1から状態2への遷移においての詳細釣り合い条件}
+\hspace{1em}まず状態1から状態2においての詳細釣り合い条件を確認する。
+
+\begin{align}
+    P(\theta_1^{(t)}, \theta_2^{(t)} | \bm{x})  &= P(\theta_1^{(t)}, \theta_2^{(t)} | \bm{x}) \times \frac{P(\theta_1^{(t+1)}, \theta_2^{(t)} | \bm{x})}{P(\theta_2^{(t)} | \bm{x})} \\
+                                                &= \frac{P(\theta_1^{(t)}, \theta_2^{(t)} | \bm{x})}{P(\theta_2^{(t)} | \bm{x})} \times P(\theta_1^{(t + 1)}, \theta_2^{(t)} | \bm{x}) \\
+                                                &= P(\theta_1^{(t + 1)}, \theta_2^{(t)} | \bm{x}) \times P(\theta_1^{(t)} | \theta_2^{(t)}, \bm{x})
+\end{align}
+
+以上より状態1から状態2の遷移において詳細釣り合い条件が成立することが示された。
+
+\subsubsection{状態2から状態3への遷移においての詳細釣り合い条件}
+\hspace{1em}次に状態2から状態3への遷移に置いての詳細釣り合い条件を確認する。
+確認するにあたっては以下2つのことに注意する。
+
+\begin{itemize}
+    \item \(\alpha = 1\)であることから\(P(\theta_2' | \theta_1^{(t + 1)}, \bm{x})T(\theta_2^{(t)} | \theta_2') \geq P(\theta_2^{(t)} | \theta_1^{(t + 1)}, \bm{x})T(\theta_2' | \theta_2^{(t)})\)が成立する
+    \item \(\alpha = 1\)であることから\(\theta_2^{(t + 1)} = \theta_2'\)
+    \item \(\alpha' = \min\left\{1, \frac{P(\theta_2^{(t)} | \theta_1^{(t + 1)}, \bm{x})T(\theta_2' | \theta_2^{(t)})}{P(\theta_2' | \theta_1^{(t + 1)}, \bm{x})T(\theta_2^{(t)} | \theta_2')}\right\}\)とする
+    \item \(\theta_1^{(t + 1)}\)は定数として扱う
+\end{itemize}
+
+以上の注意を踏まえて詳細釣り合い条件が成立することを証明する。
+
+\begin{align}
+    P(\theta_1^{(t+1)}, \theta_2' | \bm{x}) \times \alpha'  T(\theta_2^{(t)} | \theta_2') &= P(\theta_1^{(t+1)}, \theta_2' | \bm{x}) \times \frac{P(\theta_2^{(t)} | \theta_1^{(t + 1)}, \bm{x})T(\theta_2' | \theta_2^{(t)})}{P(\theta_2' | \theta_1^{(t + 1)}, \bm{x})T(\theta_2^{(t)} | \theta_2')} T(\theta_2^{(t)} | \theta_2') \\
+                                                                                                                                                                                                                                    &= P(\theta_2' | \theta_1^{(t+1)}, \bm{x}) \times \frac{P(\theta_2^{(t)} | \theta_1^{(t + 1)}, \bm{x})T(\theta_2' | \theta_2^{(t)})}{P(\theta_2' | \theta_1^{(t + 1)}, \bm{x})} \\
+                                                                                                                                                                                                                                    &= P(\theta_1^{(t + 1)}, \theta_2^{(t)} | \bm{x}) \times T(\theta_2' | \theta_2^{(t)}) \\
+                                                                                                                                                                                                                                    &= P(\theta_1^{(t + 1)}, \theta_2^{(t)} | \bm{x})T(\theta_2' | \theta_2^{(t)})
+\end{align}
+
+よって遷移2から遷移3において、詳細釣り合い条件が成立する。
+
+\subsubsection{全体の遷移の詳細釣り合い条件}
+\hspace{1em}以上で示した2つの詳細釣り合い条件を用いて全体の遷移でも詳細釣り合い条件が成立することを示す。
+
+\begin{align}
+    P(\theta_1^{(t)}, \theta_2^{(t)} | \bm{x}) &\times P(\theta_1^{(t+1)} | \theta_2^{(t)}, \bm{x}) \times T(\theta_2' | \theta_2^{(t)}) \\
+    &= P(\theta_1^{(t+1)}, \theta_2^{(t)} | \bm{x}) \times T(\theta_2' | \theta_2^{(t)}) \ \text{(前2つの項を\(\theta_1^{(t+1)}, \theta_2^{(t)}\)に遷移する確率としておいた)}\\
+    &= P(\theta_1^{(t+1)}, \theta_2^{(t + 1)} | \bm{x}) \times \alpha' T(\theta_2^{(t)} | \theta_2^{(t + 1)}) \ \text{(状態2から状態3の遷移の詳細釣り合い条件)} \\
+    &= P(\theta_1^{(t+1)}, \theta_2^{(t+1)} | \bm{x}) \times P(\theta_1^{(t)} | \theta_2^{(t)}, \bm{x}) \times \alpha T(\theta_2^{(t)} | \theta_2^{(t+1)}) \ \text{(状態1から状態2の詳細釣り合い条件)}
+\end{align}
+
+よって遷移全体で詳細釣り合い条件が確認できた。
+
+\subsection{(3)}
+\hspace{1em}メトロポリスヘイスティングスとギブスサンプリングを合わせて用いたほうが良い理由として次の2つが挙げられる。
+
+\hspace{1em}まずはギブスサンプリングの利点を使える点である。
+ギブスサンプリングは必ず提案された値に遷移するという特徴を持つ。
+よって両者にメトロポリスヘイスティングスを適用するよりもサンプリング効率が良くなる。
+また、メトロポリスヘイスティングスを使用する場合、変数の数が多いと採択率が低下する傾向にある。
+この問題もギブスサンプリングと組み合わせることで解決することができる。
+
+\hspace{1em}次にサンプルの自己相関が小さくなるという点である。
+メトロポリスヘイスティングスによって生成されたサンプル列は自己相関が高くなってしまう。
+しかし、ギブスサンプリングを挟むことで、ギブスサンプリングは自己相関の小さいサンプル列を出力するため全体のサンプル列の自己相関も小さくなる。
+
+\hspace{1em}以上がギブスサンプリングとメトロポリスヘイスティングスを合わせて使うほうが良い理由である。

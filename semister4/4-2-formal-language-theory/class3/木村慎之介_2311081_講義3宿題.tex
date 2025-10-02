@@ -1,0 +1,98 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義3宿題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{問1}
+    \hspace{1em}不完全性DFAを用いて証明を行う。\\ \indent
+    入力された文字列が$n$文字より多い場合は状態をsinkに遷移すれば良い。不完全性DFAにおいては状態の遷移先を定義しないことと同義である。
+    したがって、入力された文字列が$n$文字以下の場合のみについて考えれば良い。\\ \indent
+    $\Sigma = \{0, 1\}$であることから$k$文字の文字列は$2^k$個ある。よって、$0$文字から
+    $n$文字までの文字列の総個数は以下のようになる。
+    \begin{equation}
+      \sum_{i=0}^n = 2^{n+1} - 1
+    \end{equation}
+    つまり、高々$2^{n+1} - 1$個の状態を用意すればすべての$\omega \in L$を受理できるDFAを
+    作ることができる。
+      
+    \section*{問2}
+    \hspace{1em}任意の$L \in \mathcal{FIN}$(最大文字列の文字数を$k$とする)に対して、問1の結果から$L$を受理するDFA $A$を状態数
+    $2^{k+1} - 1$個で作成可能だとわかる。ここで、このDFA $A$を$w \in L$となる文字列を読み取った状態のみを受理状態として設計
+    すると、$L \subseteq L(A)$かつ$L(A) \subseteq L$となるので、$L$は正規言語となる。故に$\mathcal{FIN} \subseteq \mathcal{REG}$
+    が結論される。
+
+    
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

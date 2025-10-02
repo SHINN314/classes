@@ -1,0 +1,386 @@
+\documentclass[a4paper]{jsarticle}
+\usepackage{otf}
+\usepackage[dvips]{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{fancyheadings}
+\usepackage{enumerate}
+\usepackage{ascmac}
+\usepackage{color}
+\usepackage{listings, jlisting}
+%\usepackage{footmisc}
+\lhead{「数値計算」(CSプログラム) 第4回 演習資料}
+\chead{}
+\rhead{\thepage}
+\pagestyle{fancy}
+\cfoot{}
+\addtolength{\textheight}{40pt}
+\setlength{\headsep}{10pt}
+\setlength{\voffset}{-10pt}
+\setlength{\topmargin}{-30pt}
+\lstset{% 
+language={C}, 
+backgroundcolor={\color[gray]{.85}},% 
+basicstyle={\footnotesize\ttfamily},% 
+identifierstyle={\footnotesize\ttfamily},% 
+commentstyle={\footnotesize\ttfamily \color[rgb]{0.5,0.5,0.5}},% 
+keywordstyle={\footnotesize\ttfamily \color[rgb]{0,0,0}},% 
+ndkeywordstyle={\footnotesize\ttfamily},% 
+stringstyle={\footnotesize\ttfamily}, 
+frame={tb}, 
+breaklines=true, 
+columns=[l]{fullflexible},% 
+%numbers=left,% 
+numbers=none,% 
+xrightmargin=0zw,% 
+xleftmargin=3zw,% 
+numberstyle={\scriptsize},% 
+stepnumber=1, 
+numbersep=1zw,% 
+escapechar={\^},%
+morecomment=[l]{//}% 
+} 
+\def\TODO{\textbf{\LARGE TODO: }}
+\def\Ctrl{\texttt{Ctrl}}
+\def\zaki{\CID{14290}}
+\title{「数値計算」(CSプログラム) 第4回 演習資料}
+\author{山\zaki\ 匡 (情報数理工学プログラム)}
+\date{2024年10月25日}
+\begin{document}
+\maketitle
+
+Classroomで\texttt{code4.zip}を配布している。展開すると以下のファイルが生成される。
+\begin{itemize}
+\item \texttt{./4/bit.c}: 演習1で利用
+\item \texttt{./4/diff.c}: 演習2で利用
+\item \texttt{./4/newton.c}: 演習3--5で利用
+\item \texttt{./4/Makefile}: コンパイルを自動化するためのファイル
+\item \texttt{./4/main.tex}: この演習資料の\LaTeX ファイル
+\end{itemize}
+  
+\section*{演習1: IEEE 754のビットパターンを確認する}
+
+第2回の授業で、浮動小数点数はIEEE 754という規格で表されること、そのときの
+ビットパターンが定義されていることを学んだ。これが本当かどうか
+確認しよう~\footnote{教員の言うことが常に正しいとは限らない。
+物事を批判的に検討することが科学者の立場である。}。
+
+\texttt{bit.c}の中身を確認しよう。以下のようになっている。
+\begin{lstlisting}[caption={\texttt{bit.c}},numbers=left]
+#include <stdio.h>
+#include <string.h>
+
+#define DOUBLE_BITS ( 64 )
+
+// Get the i-th bit of a double variable x
+// The highest bit (i.e., the sign) is 63
+int bit ( const double x, const int i )
+{
+  unsigned long v;
+  memcpy ( &v, &x, sizeof ( double ) );
+  return  ( v >> i ) & 1;
+}
+
+int main ( void )
+{
+  double x = 0.1;
+
+  for ( int i = DOUBLE_BITS - 1; i >= 0; i-- ) {
+    int b = bit ( x, i );
+    // Print the i-th bit while inserting spaces
+    // to separate the sign, mantissa, and exponent
+    printf ( "%d%s", b, ( i == 63 || i == 52 ) ? " " : "" );
+  }
+  printf ( "\n" );
+}
+\end{lstlisting}
+コードの中身を簡単に説明する。
+
+\texttt{main}は15行目から始まる。17行目はこれからビットパターンを表示する変数\texttt{x}の定義である。
+試しに0.1という数字のビットパターンを表示してみる。
+%
+19--24行目の\texttt{for}ループで、上位ビット (つまり63ビット目) から下位ビット (0ビット目) に向かって
+順番に1ビットずつ表示する。20行目で関数\texttt{bit}に変数\texttt{x}と\texttt{i}を渡すと、\texttt{x}の
+\texttt{i}ビット目のビットが返ってくるので、それを23行目で表示する。
+%
+関数\texttt{bit}の定義は8--13行目で、\texttt{x}と\texttt{i}をもらって、11行目で\texttt{x}を一度
+\texttt{unsigned long}に変換してから、12行目で右シフトとビットのANDを取って\texttt{i}ビット目の値を返す。
+一度\texttt{unsigned long}に変換する理由は、\texttt{double}のままだとビット演算ができないからである。
+%
+なお、23行目の\texttt{printf}はちょっと書き方を工夫していて、3項演算子を使って符号と仮数と指数の間に
+空白を表示するようにしている。3項演算子は便利なので積極的に使おう。
+
+\texttt{Makefile}も併せて生成されているはずである。
+この2つのファイルを適当なディレクトリ(例えば\texttt{\~{}/numeric/4})にコピー
+し、
+\begin{lstlisting}
+[ya000836@purple99 ~/numeric/4]$ make bit
+\end{lstlisting}
+を実行せよ。プログラムが自動的にコンパイルされて、実行ファイル
+\texttt{./bit}が作成される。
+実行すると、以下のように表示されるはずである。
+\begin{lstlisting}
+[ya000836@purple99 ~/numeric/4]$ ./bit
+0 01111111011 1001100110011001100110011001100110011001100110011010
+\end{lstlisting}
+仮数が0011の繰り返しに繰り返しになっているのがわかる。
+
+\texttt{Makefile}と\texttt{make}については演習3のところで説明する。
+
+\subsection*{課題 1}
+変数\texttt{x}の値を好きな値に変更せよ。なぜその数字を選んだのか、エピソードを紹介せよ。
+次に、
+\begin{itemize}
+\item 符号
+\item 仮数
+\item 指数
+\end{itemize}
+のビットパターンがどうなるのかをまず手計算で求めよ。最後に、そのビットパターンを実際に表示して、
+正しく設定されているかを考察せよ。なお、$1.0$とか$0.5$とか$-1.0$とか簡単な数字は歓迎しない。
+
+\section*{演習2: 数値誤差を確認する}
+
+第2回の講義では数値の表現の他に数値の誤差についても学んだ。この演習では\textbf{桁落ち}について
+実際に見てみよう。スライドでいうと40枚目。
+
+桁落ちとは、符号が同じ非常に近い2数の差を計算すると有効桁数が大幅に減る、ということであった。
+有効桁数が減れば相対誤差も当然大きくなるので問題である。
+
+桁落ちを起こす典型例は数値微分である。我々が
+知っている微分の定義は、関数$f(x)$に対して
+\begin{equation*}
+f'(x) = \lim_{\Delta x \rightarrow 0} \frac{f(x+\Delta x) - f(x)}{\Delta x}
+\end{equation*}
+であった。一方計算機を使う場合は値を無限に小さくすることはできないので、せいぜい「十分小さな値」
+$h$を使って
+\begin{equation*}
+f'(x) \approx \frac{f(x+h) - f(x)}{h}
+\end{equation*}
+を計算する。なおこれは\textbf{前進差分}と言って値がちょっと前にずれるので、実際には\textbf{中心差分}
+\begin{equation*}
+f'(x) \approx \frac{f(x+h/2) - f(x-h/2)}{h}
+\end{equation*}
+を使うことが多い。この演習でも中心差分を使う\footnote{もちろん\textbf{後退差分}も存在する。後退差分は
+$\displaystyle f'(x) \approx \frac{f(x) - f(x-h)}{h}$である。どのような離散化を使うべきなのかはその
+時々による。特に微分方程式の数値計算では非常に本質的な違いを生むことになる。}。
+
+中心差分の式を使って、適当な関数の微分を数値的に求めてみよう。
+\texttt{diff.c}の中身を確認しよう。
+\begin{lstlisting}[caption={\texttt{diff.c}},numbers=left]
+#include <stdio.h>
+#include <math.h>
+
+double f ( double x ) { return sin ( x ); }
+
+int main ( void )
+{
+  double x = M_PI / 4.0;
+  double h = 1.0;
+
+  double dfdx = ( f ( x + h / 2.0 ) - f ( x - h / 2.0 ) ) / h;
+  double relerr = fabs ( dfdx - cos ( x ) ) / fabs ( cos ( x ) );
+  printf ( "%1.14f %1.14f %1.14f\n", h, dfdx, relerr );
+}
+\end{lstlisting}
+5行目で$f(x) = \sin (x)$を定義している。
+このプログラムは$f'(\pi/4) = \cos(\pi/4) \approx 0.70710678\cdots$の値を数値的に求めるものである。
+9行目で$x$の値を$\pi/4$にセットし、10行目で$h$の値を1.0にセットする。12行目で中心差分を計算して、
+13行目で正しい値、すなわち$\cos(\pi/4)$との相対誤差を計算して、14行目で$h$の値・微分値・相対誤差を
+まとめて表示する。
+
+実行してみよう。
+\begin{lstlisting}
+[ya000836@purple99 ~/numeric/4]$ make diff
+[ya000836@purple99 ~/numeric/4]$ ./diff
+1.00000000000000 0.67801009884209 0.04114892279159
+\end{lstlisting}
+$h=1.0$のときの微分値と相対誤差はそれぞれ0.67801009884209と0.04114892279159である。
+
+\subsection*{課題 2}
+$h$を1.0から$10^{-14}$まで0.1刻みで小さくし、そのときの微分値と相対誤差を求めよ。
+微分の定義からすれば、$h$の値は小さければ小さいほど正確に近似ができるはずだが、
+実際はどうだろうか？$h$を小さくしていくと相対誤差はどう変化していくか？また
+相対誤差が最も小さくなったときの$h$の値はいくつか？を答えよ。さらに、レポートには
+$h$の値・微分値・相対誤差を表にして掲載せよ。
+
+\section*{演習3: ニュートン法を試す}
+
+ニュートン法のプログラムを\texttt{newton.c}として用意した。
+プログラムの中を確認してみよう。
+\begin{lstlisting}[caption={\texttt{newton.c}},numbers=left]
+#include <stdio.h>
+#include <math.h>
+
+#define EPSILON ( 1e-14 )
+
+double f ( double x ) { return x * x * x - 7 * x * x + 6 * x; } // solutions are 6, 1, 0
+double dfdx ( double x ) { return 3 * x * x - 14 * x + 6; }
+
+double newton_method ( double ( *f ) ( double ), double ( *dfdx ) ( double ), double initial_value, double epsilon )
+{
+  double x = initial_value;
+
+  int i = 0;
+  while ( fabs ( f ( x ) ) > epsilon ) {
+    fprintf ( stderr, "%d %1.16f\n", i, x );
+    x = x - f ( x ) / dfdx ( x );
+    i++;
+  }
+
+  return x;
+}
+
+int main ( void )
+{
+  double x = newton_method ( f, dfdx, 7.0, EPSILON ); // find x = 6.0 while starting at 7.0
+
+  printf ( "answer = %1.16f\n", x );
+}
+\end{lstlisting}
+
+簡単に解説する。関数$f(x)$の定義は6行目、$\displaystyle\frac{df}{dx}$の定義は7行目で
+ある。今は例として$f(x) = x^{3} - 7x^{2} + 6x$としてあるが、これは私の
+居室の番号の数字6, 1, 0を解とする3次方程式である。9--21行目がニュートン法
+の本体である。引数として、関数\texttt{f} = $f(x)$, \texttt{dfdx} =
+$\displaystyle\frac{df}{dx}$, ニュートン法の初期値\texttt{initial\_value}、収束判定の定数\texttt{epsilon}
+を受け取り、$|f(x)| < \texttt{epsilon}$となる数値解$x$を返す。ポインタ
+を使って関数を渡す方法はCSプログラムなら知っておいて欲しい。
+23--30行目が\texttt{main}関数で、$f(x) = x^{3} - 7x^{2} + 6x = 0$の解を
+初期値7.0からスタートして求める。収束の判定は$10^{-14}$とする。求めた解
+を標準出力に出力する。一方、ニュートン法の本体では、各ステップでの解の候
+補の値をステップ数とともに標準エラー出力に出力する。
+
+
+プログラムを実行すると以下の結果が得られる。
+\begin{lstlisting}
+[ya000836@purple99 ~/numeric/4]$ make newton
+[ya000836@purple99 ~/numeric/4]$ ./newton
+0 7.0000000000000000
+1 6.2363636363636363
+2 6.0181226776065397
+3 6.0001192331463136
+4 6.0000000052123896
+answer = 5.9999999999999991
+\end{lstlisting}
+まずプログラムが正しく動作し、同じ結果が得られることを確認せよ。
+
+\texttt{Makefile}の中身は以下の通りである\footnote{実際には\texttt{main.pdf}と\texttt{bit}の記述も含まれている。}。
+簡単なMakefileが書けると生産性は飛躍的に増す。
+\begin{lstlisting}[caption={\texttt{Makefile}},numbers=left,escapeinside={(*}{*)}]
+all:
+
+CC = gcc
+CFLAGS = -O3 -std=gnu11 -Wall
+
+newton: newton.o
+	$(CC) $(CFLAGS) -o $@ $^  -lm
+
+newton.o: newton.c
+	$(CC) $(CFLAGS) -c $<
+\end{lstlisting}
+
+Makefileの基本的な書式はこうである。
+\begin{lstlisting}
+ターゲット名: 依存ファイル1 依存ファイル名2 ...
+        命令1
+        命令2
+        ...
+\end{lstlisting}
+命令$n$の各行の先頭はタブであることに注意。引数無しで\texttt{make}すると、
+\begin{enumerate}
+ \item 一番最初のターゲット(この場合は\texttt{all})が実行される。
+ \item \texttt{all}の依存ファイルは\texttt{newton}なので、次にターゲット\texttt{newton}を実行
+する。
+ \item \texttt{newton}の依存ファイルは\texttt{newton.o}なので、次にター
+       ゲット\texttt{newton.o}を実行する。
+ \item \texttt{newton.o}の依存ファイルは\texttt{newton.c}だが、それ以上
+       ターゲットは存在しないので、命令を実行する。変数CC, CFLAGSが展開
+       され、かつ\verb|$@|はターゲット名に、\verb|$<|は先頭の依存ファイル名
+       に展開されるので、この命令は次と等価である。
+\begin{lstlisting}
+gcc -O3 -std=gnu11 -Wall -c newton.c
+\end{lstlisting}
+結果として\texttt{newton.o}が生成される。なお、実際のMakefileではサフィックス
+ルールという省略記法を使っている。
+\item \texttt{newton.o}が生成されると、ターゲット\texttt{newton}の依存関
+      係が満たされる。ここで、\verb|$^|は依存ファイル名の列に展開されるので、
+\begin{lstlisting}
+gcc -O3 -std=gnu11 -Wall -o newton newton.o -lm
+\end{lstlisting}
+が実行される。結果として\texttt{newton}が生成される。
+\end{enumerate}
+
+Makeが素晴らしいのは、ファイルを変更したときにだけ実際にリコンパイルがな
+される点である。ファイルを変更しないで\texttt{make}しても、以下のように
+なりコンパイルされない。
+\begin{lstlisting}
+[ya000836@purple99 ~/numeric/4]$ make newton
+make: Nothing to be done for `all'.
+\end{lstlisting}
+
+\subsection*{課題 3}
+以下の手順で$f(x)$を定義し、$f(x)=0$の解を求めよ。
+\begin{enumerate}
+ \item 実数解を持つ適当な非線形方程式$f(x)$を考えよ。多項式は面白みに欠けるので、複雑なものが良い。
+ \item $f(x)$から$\displaystyle\frac{df}{dx}$を求めよ。
+ \item 初期値を適当に設定し、ニュートン法を実行して解が得られるかどうかを
+   試してみよ。
+ \item その際、途中の解の近似値だけでなく、相対誤差もあわせて計算せよ。相対誤差の情報は次の演習4, 5で使う。
+\end{enumerate}
+
+レポートには、$f(x)$の式、初期値、最終的に得られた解、途中の解の近似値ならびに相対誤差を記せ。
+また、初期値を解から遠いところに設定した場合、収束までのステップ数がどのくらい違うかを調べよ。
+
+\subsection*{課題 4}
+
+関数$f(x) = x^{2} - 2x + 1$と$g(x) = x^{2} - 3x + 2$はともに$x = 1$を解に持つ。
+初期値 $x_{0} = 1.1$、収束条件を演習3と同じ$1.0^{-14}$としニュートン法で解を求める場合、
+それぞれの収束にかかるステップ数を求めよ。さらに、ステップ数に差が出る理由
+について考察せよ。
+
+\subsection*{課題 5}
+
+ニュートン法の収束条件について考察せよ。ニュートン法では解の近くから出発した場合、
+2次収束すると説明した。課題4において実際に各ステップでの誤差の値を計算し、
+2次収束しているかどうかを考えよ。特に1つ目の式の場合に2次収束するかどうかを調べよ。
+2次収束しない場合はその理由を考察せよ。
+
+\section*{演習4: 多変数のニュートン法}
+
+講義で紹介した多変数のニュートン法を用いて、複素関数に関するニュートン法を実装してみよう。
+理論的な部分は講義中にほぼ全部説明したので、それをストレートに実装する課題とする。
+
+\subsection*{課題 6}
+
+講義と同様に$z^{2}+1 = 0$の解を求める場合を考え、ニュートン法の反復式を最後まで導出せよ。
+導出した式を実装し、実際に適当な初期値から出発して解を求めてみよ。余力があれば別の式に
+ついても試してみると良い\footnote{大学の課題というのは近視眼的には単位のためにやるものだが、最終的には自分のためにやるものなので。}。
+レポートには、初期値をどう設定してどういう結果が得られたのかを書くだけでなく、
+導出した反復式を\textbf{導出過程も含めて}記載すること\footnote{結果だけだとどこからその式が出てきたのかがわからないから。}。
+ソースコードも提示すること。
+
+\section*{演習5: 割線法のプログラムを作成する}
+
+最後に、割線法についても実装してみよう。
+
+\subsection*{課題 7}
+
+ニュートン法のプログラムを参考にして、割線法のプログラム
+\texttt{secant.c}を作成せよ\footnote{secant = 割線}。
+
+課題3で考えたのと同じ式の解を割線法で求めよ。初期値として、1つは課題3で設定した
+もの、もう1つは課題3でニュートン法が最初に計算した値とする。つまりニュートン法
+で最初の1ステップを実行したところから割線法の計算を始める。収束までの
+ステップ数をニュートン法と比較せよ。レポートには作成したソースコードと実行中の
+様子を記載し、さらにステップ数の違いを考察せよ。
+
+\section*{レポート提出について}
+
+提出締切は2024年11月7日23:59 (日本標準時)、PDFをClassroomからアップロードせよ。
+なお\LaTeX で作成したPDFのみ受け付ける。
+これは、卒論は必ず\LaTeX で書くことになるので、早いうちから訓練しておく方が良い
+という考えに基づくものである。
+
+なお、この資料の\LaTeX のソースファイルも一緒に配布している (\texttt{main.tex})。
+レポートの雛形として使ってもらってかまわない。
+
+\end{document}

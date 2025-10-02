@@ -1,0 +1,214 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{listings}
+
+% lstlistingのsetting
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% theories setting (for japanese language)
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{thm}{定理}[section]
+\newtheorem{lem}[thm]{補題}
+\newtheorem{prop}[thm]{命題}
+\newtheorem{cor}[thm]{系}
+\newtheorem{ass}[thm]{仮定}
+\newtheorem{conj}[thm]{予想}
+\newtheorem{dfn}[thm]{定義}
+\newtheorem{rem}[thm]{注}
+
+\newtheorem*{thm*}{定理}
+\newtheorem*{lem*}{補題}
+\newtheorem*{prop*}{命題}
+\newtheorem*{cor*}{系}
+\newtheorem*{ass*}{仮定}
+\newtheorem*{conj*}{予想}
+\newtheorem*{dfn*}{定義}
+\newtheorem*{rem*}{注}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+
+% proof enviroment
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item\relax
+  {\bfseries
+  #1\@addpunct{.}}\hspace\labelsep\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+% タイトル
+\begin{center}
+{\Large{\bf 数学の哲学 レポート}} \\
+{\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
+{\bf 2311081 木村慎之介} \\
+\end{center}
+
+\section{ヒルベルトの形式主義}
+\hspace{1em}ヒルベルトの形式主義は古典的数学と直観主義の融合を試みる立場である。
+形式主義の説明を行うために、その前提となっている古典的数学と直観主義の説明から始める。
+
+古典的数学では数学的な対象が人間の認知能力とは独立に存在すると考えている。
+この立場に置いては、数学の基本的な法則である「排中律」を真であると考え、排中律を元に議論を展開することがある。
+つまり、ある命題を証明したければその否定が偽であることを知れればよく、元の命題についてなにかしら構成的に論理を展開する必要がないということである。
+一方、直観主義では排中律を簡単には認めず、数学的な命題を実際に対象を構成して見せることで証明を行おうとする立場である。
+
+ヒルベルトは排中律を制限することを良しとしなかったが、一方で無限に関する議論についての安全性については疑問を持っていた。
+そこで「数学における証明が有限の記号列によって表現できる」というアイデアにも基づき数学を基礎付けようとした。
+これをヒルベルトプログラムという。
+ヒルベルトプログラムでは数学を形式的な記号の列で表現し、構成した体系における無矛盾性と完全性を証明することで数学を基礎付けようとした。
+
+ヒルベルトは無矛盾性の証明において、以下の命題と同値であることを見抜いた。
+
+\begin{prop}
+もし\(T \vdash \forall x A(x)\)(ただし\(\forall x A(x)\)は有限的な立場で意味のある論理式)ならば\(\forall x A(x)\)は有限的な数学\(S\)上で真となる
+\end{prop}
+
+加えて、制限された算術体系に置いてはその体系の無矛盾性が証明されていたため、ヒルベルトプログラムは肯定的に証明されると楽観視された。
+
+\section{ゲーデルの不完全性定理}
+\hspace{1em}ヒルベルトプログラムはゲーデルという数学者によってある意味で否定的に証明されることになった。
+これをゲーデルの不完全性定理という。  
+この定理の主張は以下 2 つのものである。
+
+\begin{itemize}
+  \item \(T\)が十分に強力な形式的体系である場合、\(T\)が無矛盾ならば\(T\)は不完全である(第1不完全性定理)
+  \item \(T\)が十分に強力な形式的体系である場合、\(T\)が無矛盾ならば\(T\)は自身の無矛盾性を形式的に証明することができない(第2不完全性定理)
+\end{itemize}
+
+ここで出てきた「十分に強力な形式的体系」というのは無矛盾で、ペアノ算術を含み、再帰的であるという我々にとって身近な条件となっている。
+したがって、この定理は以下のことを主張している事になっている。
+
+\begin{itemize}
+  \item 我々にとって身近な体系は不完全な体系である
+  \item 我々にとって身近な体系は自身の無矛盾性を形式的に証明することができない
+\end{itemize}
+
+以上の定理から、ヒルベルトプログラムは当初の構想のままでは実行できないことが示された。
+以下、第1不完全性定理と第2不完全性定理の証明の概要を記す。
+
+\subsection{第1不完全性定理の証明の概要}
+\hspace{1em}第1不完全性定理では「私は証明不可能である」という文\(g\)を形式的体系\(T\)で形式的に構成し、構成した文とその否定の文を形式的に証明できないことを示すことで形式的体系\(T\)の不完全性を示した。
+
+ゲーデルはこの第1不完全性定理を証明するために形式的体系を算術体系と結びつけた。
+算術体系から形式的体系への橋渡しでは「表現定理」を用いることで算術体系で定義した述語を形式的体系で表せるようにした。
+一方、形式的体系から算術体系への橋渡しでは、形式的体系における記号・記号列・記号列の列にゲーデル数という数を割り当てることで、形式的体系の議論を算術体系でも扱えるようにした。\cite{mathematical_girls}
+
+\subsection{第2不完全性定理の証明の概要}
+\hspace{1em}ゲーデルは第2不完全性定理の証明を形式的に表せることに気づいた。
+第1不完全性定理では「\(T\)が無矛盾ならば\(T\)から\(g\)を形式的に証明することができない」ということを主張している。
+このことは\(g\)の意味を考慮すると「\(T\)が無矛盾ならば\(g\)」に等しいので形式的に表すと\(T \vdash Con_{T} \rightarrow g\)となる。
+
+以上のことを踏まえて背理法を用いて証明する。
+\(T \vdash Con_T\)、すなわち\(T\)は形式的に\(T\)自身の無矛盾性を証明できることを仮定する。
+すると以上の議論から\(T \vdash g\)が形式的に証明される。
+しかし、これは第1不完全性定理で証明した事実に反する。
+したがって、\(T\)は\(T\)自身の無矛盾性を形式的に証明できないことが示された。\cite{mathematical_girls}
+
+\section{数学基礎論の発展}
+\hspace{1em}不完全性定理が与える影響は否定的なものばかりではなかった。
+不完全性定理は、体系同士の相対的な「強さ」を与えた。
+
+不完全性定理によると、有限の立場の数学体系の無矛盾性を証明するには有限の数学体系に別の原理を加えた体系を用意する必要がある。
+ヒルベルトの学生であったゲルハルト・ゲンツェンは\(\varepsilon_0\)までの超限帰納法を用いることでペアノ算術が無矛盾であることを証明した。
+これはすなわち有限の数学体系に\(\varepsilon_0\)までの超限帰納法を加えた体系が、単なる有限の数学体系よりも強いということを示している。
+
+さらに、ゲンツェンはペアノ算術によって、\(\alpha < \varepsilon_0\)までの超限帰納法を証明することができた。
+この結果は、ペアノ算術が扱える順序数の上限が\(\varepsilon_0\)であることを示している。
+言い換えれば\(\varepsilon_0\)という順序数がペアノ算術の強さを表していると言える。
+現代では、以上のようにある理論体系が証明できる超限帰納法の限界となる順序数を調べること領域を「順序数解析」という。
+
+\begin{thebibliography}{99}
+\bibitem{mathematical_girls} 結城浩. 数学ガール ゲーデルの不完全性定理. SBクリエイティブ株式会社, 2009. 
+\end{thebibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\numberwithin{equation}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+%\def\thesection{付録\Alph{section}}
+\makeatletter 
+\newcommand{\section@cntformat}{付録 \thesection:\ }
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\end{document}

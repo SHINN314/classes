@@ -1,0 +1,70 @@
+{
+  "makefile.configureOnOpen": false,
+  "latex-workshop.latex.clean.fileTypes": [
+      "*.aux",
+      "*.bbl",
+      "*.blg",
+      "*.idx",
+      "*.ind",
+      "*.lof",
+      "*.lot",
+      "*.out",
+      "*.toc",
+      "*.acn",
+      "*.acr",
+      "*.alg",
+      "*.glg",
+      "*.glo",
+      "*.gls",
+      "*.ist",
+      "*.fls",
+      "*.log",
+      "*.fdb_latexmk",
+      "*.snm",
+      "*.nav",
+      "*.dvi",
+      "*.synctex.gz"
+  ],
+  "latex-workshop.intellisense.package.enabled": true,
+  "latex-workshop.latex.recipes": [
+      {
+      "name": "uplatex",
+      "tools": [
+          "uplatex",
+          "uplatex",
+          "dvipdfmx"
+      ]
+      }
+  ],
+  "latex-workshop.latex.tools": [
+      {
+      "name": "uplatex",
+      "command": "uplatex",
+      "args": [
+          "-synctex=1",
+          "-interaction=nonstopmode",
+          "-file-line-error",
+          "-kanji=utf8",
+          "-shell-escape",
+          "%DOC%"
+      ]
+      },
+      {
+      "name": "dvipdfmx",
+      "command": "dvipdfmx",
+      "args": [
+          "%DOCFILE%.dvi"
+      ]
+      },
+      {
+      "name": "pbibtex",
+      "command": "pbibtex",
+      "args": [
+          "-kanji=utf8",
+          "%DOCFILE%"
+      ]
+      }
+  ],
+  "latex-workshop.latex.autoClean.run": "onSave"
+  
+}

@@ -1,0 +1,31 @@
+\section{問4}
+\hspace{1em}平均\(\mu\)の正規分布
+
+\begin{equation}
+    p(x | \sigma^2) = \frac{1}{\sqrt{2\pi}\sigma} \exp(-\frac{(x - \mu)^2}{2\sigma^2})
+\end{equation}
+
+\noindent を尤度関数とした時、逆ガンマ分布
+
+\begin{equation}
+    p(\sigma^2 | \alpha, \beta) = \frac{\beta^{\alpha}}{\Gamma(\alpha)}(\sigma^2)^{-\alpha-1}\exp(-\frac{\beta}{\sigma^2})
+\end{equation}
+
+\noindent が共役事前分布であることを証明する。
+
+\begin{align}
+    p(\sigma^2 | \alpha, \beta, x)  &\propto p(x | \sigma^2)p(\sigma^2 | \alpha, \beta) \\
+                                    &= \frac{1}{\sqrt{2\pi}} \times \frac{\beta^{\alpha}}{\Gamma(\alpha)}(\sigma^2)^{-(\alpha + \frac{1}{2})-1} \exp(-\frac{\beta + \frac{(x - \mu)^2}{2}}{\sigma^2}) \\
+                                    &\propto \frac{1}{\sqrt{2\pi}} \times \frac{1}{\Gamma(\alpha)} \times \frac{\beta}{\{\beta + \frac{(x - \mu)^2}{2}\}} \times \frac{\{\beta + \frac{(x - \mu)^2}{2}\}}{\Gamma(\alpha + \frac{1}{2})}(\sigma^2)^{-(\alpha + \frac{1}{2}) - 1} \exp(\frac{\beta + \frac{(x - \mu)^2}{2}}{\sigma^2}) \\
+                                    &\propto \frac{\{\beta + \frac{(x - \mu)^2}{2}\}}{\Gamma(\alpha + \frac{1}{2})}(\sigma^2)^{-(\alpha + \frac{1}{2}) - 1} \exp(\frac{\beta + \frac{(x - \mu)^2}{2}}{\sigma^2})
+\end{align}
+
+よって事後分布のカーネルと事前分布のカーネルが逆ガンマ分布に一致するため、正規分布を尤度関数としたときの逆ガンマ分布は共役事前分布となる。
+
+
+\begin{align}
+    \hat{\sigma}^2  &= \frac{\beta + \frac{(x - \mu)^2}{2}}{\alpha + \frac{1}{2}} \\
+                    &= 1
+\end{align}
+
+\noindent となる。

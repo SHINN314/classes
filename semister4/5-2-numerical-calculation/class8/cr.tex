@@ -1,0 +1,107 @@
+
+$n$元連立一次方程式
+\begin{equation*}
+  \begin{pmatrix}
+    a_{11} & a_{12} & \ldots & a_{1n}\\
+    a_{21} & a_{22} & \ldots & a_{2n}\\
+    \vdots & \vdots & \ddots & \vdots \\
+    a_{n1} & a_{n2} & \ldots & a_{nn}
+  \end{pmatrix}
+  \begin{pmatrix}
+    x_{1} \\
+    x_{2} \\
+    \vdots\\
+    x_{n}
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    b_{1} \\
+    b_{2} \\
+    \vdots\\
+    b_{n}
+  \end{pmatrix}
+\end{equation*}
+を$A\mathbf{x} = \mathbf{b}$と書き、さらに同値な方程式$\mathbf{x} = M\mathbf{x}+N\mathbf{b}$
+に変形して\underline{反復法}でその解を求めることを考える。いずれも要素は実数であり、
+かつ$a_{ii}\neq 0$ ($1\le i\le n$)とする。
+
+行列$A$を$A = D + L + U$ と分割して記述する。ここで行列$D$, $L$, $U$はそれぞれ
+\begin{equation*}
+  D = \begin{pmatrix}
+        a_{11} &  0      & \ldots & 0\\
+        0      & a_{22}  & \ddots & \vdots\\
+        \vdots & \ddots  & \ddots & 0\\
+        0      &  \ldots & 0      & a_{nn}
+      \end{pmatrix},\ 
+  L = \begin{pmatrix}
+        0      & \ldots & \ldots & 0 \\
+        a_{21} & \ddots &        & \vdots\\
+        \vdots & \ddots & \ddots & \vdots \\
+        a_{n1} & \ldots & a_{n,n-1} & 0
+      \end{pmatrix},\ 
+  U = \begin{pmatrix}
+        0      & a_{12} & \ldots & a_{1n} \\
+        \vdots & \ddots & \ddots & \vdots\\
+        \vdots &        & \ddots & a_{n-1,n} \\
+        0      & \ldots & \ldots & 0
+      \end{pmatrix}
+    \end{equation*}
+である。
+
+\setlength{\leftmargini}{0pt}
+\begin{enumerate}
+\addtolength{\itemsep}{1zw}
+\item \underline{ヤコビ法}は初期値$\mathbf{x}^{(0)}$に対して、
+  $k=0, 1, 2, \cdots$として次の式で反復を行う：
+\begin{equation*}
+  \begin{split}
+    x^{(k+1)}_{1} &= \frac{1}{a_{11}}\left\{b_{1} - \left(a_{12}x^{(k)}_{2} + a_{13}x^{(k)}_{3} + \cdots + a_{1n}x^{(k)}_{n}\right) \right\}\\
+                  &\vdots\\
+    x^{(k+1)}_{i} &= \frac{1}{a_{ii}}\left\{b_{i} - \left(a_{i1}x^{(k)}_{1} + \cdots + a_{i,i-1}x^{(k)}_{i-1} + a_{i,i+1}x^{(k)}_{i+1} + \cdots + a_{in}x^{(k)}_{n}\right) \right\}\\
+                  &\vdots\\
+    x^{(k+1)}_{n} &= \frac{1}{a_{nn}}\left\{b_{n} - \left(a_{n1}x^{(k)}_{1} + a_{n2}x^{(k)}_{2} + \cdots + a_{n,n-1}x^{(k)}_{n-1}\right) \right\}
+    \end{split}
+\end{equation*}
+\begin{description}
+\item[(a)] 反復式を$\mathbf{x}^{(k+1)} = M\mathbf{x}^{(k)} + N\mathbf{b}$と書くとき、$M$, $N$を$D$, $L$, $U$を用いて記述せよ。
+\item[(b)] $\displaystyle A = \begin{pmatrix} 4 & 1 \\ 1 & 2 \end{pmatrix}$とする。行列$M$, $N$を求めよ。
+\item[(c)] $\displaystyle A = \begin{pmatrix} 4 & 1 \\ 1 & 2 \end{pmatrix}$、$\displaystyle \mathbf{b} = \begin{pmatrix} 15 \\ 9\end{pmatrix}$とする。初期値$\displaystyle \mathbf{x}^{(0)} = \begin{pmatrix} 0 \\ 0\end{pmatrix}$としてヤコビ法で解いた場合の、$\mathbf{x}^{(1)}$, $\mathbf{x}^{(2)}$, $\mathbf{x}^{(3)}$を求めよ。
+\end{description}
+
+\newpage
+
+\item 任意のベクトル$\mathbf{x}$と行列$A$に対して次の\underline{ノルム}を定義する：
+  \begin{equation*}
+      ||\mathbf{x}|| \stackrel{\text{def}}{=} \max_{1\le i\le n}|x_{i}|,\qquad
+      ||A|| \stackrel{\text{def}}{=} \max_{1\le i\le n} \sum_{j=1}^{n}\left|a_{ij}\right|.
+  \end{equation*}
+  \begin{description}
+  \item[(d)] $\displaystyle ||A\mathbf{x}||\le ||A||\cdot||\mathbf{x}||$を証明せよ。
+  \end{description}
+  
+\item 行列$A$が\underline{対角優位}であるとは、次の性質を満たすことをいう：
+  \begin{equation*}
+    |a_{ii}|>\sum_{j=1, j\neq i}^{n}\left|a_{ij}\right|\qquad (1\le i\le n)
+  \end{equation*}
+  \begin{description}
+  \item[(e)] 行列$A$が対角優位の場合、$||M||<1$を示せ。
+  \end{description}
+
+\item 次の定理が成立する：
+  \begin{screen}
+    $\mathbb{R}^{n}$上で定義される関数$\mathbf{g}(\mathbf{x})$が
+    \setlength{\leftmargini}{20pt}
+    \begin{enumerate}[(i)]
+    \item $\mathbf{x}\in\mathbb{R}^{n} \Longrightarrow \mathbf{g}(\mathbf{x})\in \mathbb{R}^{n}$,
+    \item $\mathbf{x}, \mathbf{y}\in\mathbb{R}^{n}\Longrightarrow ||\mathbf{g}(\mathbf{x}) - \mathbf{g}(\mathbf{y})||\le \rho ||\mathbf{x}-\mathbf{y}||$,
+    \item $0\le \rho < 1$
+    \end{enumerate}
+    を満たす時、$\mathbf{x}=\mathbf{g}(\mathbf{x})$の解$\mathbf{x}=\mathbf{x}_{*}$はただ1つ存在し、かつ$\mathbf{x}^{(0)}$を初期値とする反復式
+    $\mathbf{x}^{(k+1)}=\mathbf{g}(\mathbf{x}^{k})$によって生成される列$\left\{\mathbf{x}^{(k)}\right\}$は$k\rightarrow\infty$で$\mathbf{x}_{*}$に収束する。
+  \end{screen}
+
+  \begin{description}
+  \item[(f)] この定理を用いて、行列$A$が対角優位の場合、ヤコビ法は必ず解に収束することを証明せよ。
+  \end{description}
+  
+\end{enumerate}

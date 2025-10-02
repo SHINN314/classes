@@ -1,0 +1,118 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf オペレーションズ・リサーチ 第3回課題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{課題(1)}
+        待ち行列の長さが\(k \text{人} (k \in \mathbb{N})\)である確率\(P_{qk}\)は\(P_{qk} = P_{k+1} = \rho^{k+1}(1-\rho)\)であるから、平均と分散は以下のように求まる。
+        \begin{align*}
+            E[K] &= \sum_{k=1}^{\infty}(k - 1)\rho^k(1-\rho) \\
+                   &= \sum_{k=0}^{\infty}k\rho^k(1-\rho) - (1 - P_0) \\
+                   &= \rho(1-\rho)\frac{d}{d\rho}\sum_{k=0}^{\infty}\rho^k - \rho \\
+                   &= \frac{\rho}{1 - \rho} - \rho \\
+                   &= \frac{\rho^2}{1 - \rho} \\
+                   \\
+            E[K^2] &= \sum_{k = 0}^{\infty}k^2\rho^{k+1}(1-\rho) \\
+                   &= \rho^3(1-\rho)\frac{d^2}{d\rho^2}\sum_{k=0}^{\infty}\rho^k + \rho^2(1-\rho)\frac{d}{d\rho}\sum_{k = 0}^{\infty}\rho^k \\
+                   &= \frac{\rho^2 + \rho}{(1-\rho)^2} \\
+                   \\
+            V[K] &= E[K^2] - (E[K])^2 \\
+                 &= \frac{\rho^2(1 + \rho - \rho^2)}{(1-\rho)^2}
+        \end{align*}
+
+    \section*{課題(2)}
+        待ち時間の確率密度は\(f(t) = \rho(1-\rho)\mu\exp(-(1-\rho)\mu t),\ f(0) = 1-\rho\)で表されるので、平均と分散は以下のように求まる。
+        \begin{align*}
+            E[T] &= \int_{0}^{\infty}t\rho(1-\rho)\mu\exp(-(1-\rho)\mu t)dt \\
+                 &= \frac{\rho}{(1-\rho)\mu}\int_{0}^{\infty}t\exp(-t)dt \\
+                 &= \frac{\rho}{(1-\rho)\mu}\left[-t\exp(-t) - \exp(-t)\right]_{0}^{\infty} \\
+                 &= \frac{\rho}{(1-\rho)\mu} \\
+                 \\
+            E[T^2] &= \int_{0}^{\infty}t^2\rho(1-\rho)\mu\exp(-(1-\rho)\mu t)dt \\
+                   &= \frac{\rho}{(1-\rho)\mu}\int_{0}^{\infty}t^2\exp(-t)\frac{1}{(1-\rho)\mu}dt \\
+                   &= \frac{\rho}{(1-\rho)^2\mu^2}\left[-t^2\exp(-t) -2t\exp(-t) -2\exp(-t)\right]_{0}^{\infty} \\
+                   &= \frac{2\rho}{(1-\rho)^2\mu^2} \\
+                   \\
+            V[T] &= E[T^2] - (E[T])^2 \\
+                 &= \frac{\rho(1-\rho)}{(1-\rho)^2\mu^2} 
+        \end{align*}
+
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

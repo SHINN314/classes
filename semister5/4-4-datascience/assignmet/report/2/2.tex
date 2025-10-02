@@ -1,0 +1,132 @@
+\section{問2}
+\subsection{(1)}
+\hspace{1em}作成したプログラムを以下に乗せる。
+
+\begin{lstlisting}[caption={最小二乗推定量と正則化最小二乗推定量を求めるプログラム}, label={code_regression}]
+# Print the first 6 rows of the data used for analysis
+print("--- 分析に使用するデータ（dat）の先頭6行 ---")
+print(head(dat))
+
+# OLS and Ridge regression
+beta_ols <- solve(t(X) %*% X) %*% t(X) %*% y
+
+rownames(beta_ols) <- c("Intercept", "x1", "x2", "x3", "x4", "x5", "x6")
+colnames(beta_ols) <- "OLS_estimate"
+
+lambda <- 1
+p <- ncol(X)
+I <- diag(p)
+
+I[1, 1] <- 0
+
+# Ridge regression
+beta_ridge <- solve(t(X) %*% X + lambda * I) %*% t(X) %*% y
+
+rownames(beta_ridge) <- c("Intercept", "x1", "x2", "x3", "x4", "x5", "x6")
+colnames(beta_ridge) <- "Ridge_estimate"
+
+# Output results
+print("--- 最小二乗推定量 (OLS) ---")
+print(beta_ols)
+
+print("--- 正則化最小二乗推定量 (Ridge, λ=1) ---")
+print(beta_ridge)
+\end{lstlisting}
+
+次に、実行結果を以下に乗せる。
+
+\begin{lstlisting}[caption={コード\ref{code_regression}の実行結果}, label={code_output_regression}]
+[1] "--- 分析に使用するデータ（dat）の先頭6行 ---"
+                    x1         x2         x3         x4         x5        x6
+Courtelary   0.8051305 -1.4820682  0.1062125 -0.7477267 0.77503669 0.8029583
+Delemont     1.0372847 -0.2447942 -0.2057867  1.0477479 0.77503669 1.0359411
+Franches-Mnt 1.7897846 -0.4825622 -0.6217858  1.2529998 0.08838778 1.7899671
+Moutier      1.2534283 -0.6234617 -0.4137863 -0.1768099 0.12272023 1.2563525
+Neuveville   0.5409551 -0.3152440  0.4182118 -0.8628212 0.22571757 0.5383002
+Porrentruy   0.4769125 -0.6762990 -0.4137863  1.1851420 2.28566429 0.4798413
+                       y
+Courtelary   -0.18668632
+Delemont     -1.31480509
+Franches-Mnt -1.44015162
+Moutier      -0.56272591
+Neuveville    0.06400674
+Porrentruy   -0.93876550
+[1] "--- 最小二乗推定量 (OLS) ---"
+           OLS_estimate
+Intercept  3.760880e-15
+x1        -2.708939e+01
+x2        -2.317531e-01
+x3         3.924185e-01
+x4        -3.545175e-01
+x5         3.419800e-02
+x6         2.693602e+01
+[1] "--- 正則化最小二乗推定量 (Ridge, λ=1) ---"
+          Ridge_estimate
+Intercept   1.266348e-16
+x1         -8.695476e-02
+x2         -2.450151e-01
+x3          3.738593e-01
+x4         -3.382417e-01
+x5          3.664733e-02
+x6         -8.079264e-02
+\end{lstlisting}
+
+結果を確認すると、\(x_1\)と\(x_6\)の係数において、最小二乗推定量では絶対値が大きくなっているのに対して、正則化最小二乗推定量は絶対値が他の回帰係数と差が無いことが読み取れる。
+これは多重共線性が影響していると考えられる。
+
+結果\ref{code_output_regression}の入力データの部分を見ると、\(x_1\)と\(x_6\)に相関関係が見られる。
+相関が大きいデータがあると逆行列を求める際に、相関が高い部分の係数の値が大きくなってしまう。
+
+一方、正則化最小二乗推定量ではこの相関が高くなってしまった時でも逆行列を求める際に、相関が高いところでもある程度値を抑える役割があるため、極端に大きな値にはならなかった。
+
+\subsection{(2)}
+以下に各回帰係数の検定を行うために実装したコードを乗せる。
+
+\begin{lstlisting}[caption={回帰係数の検定プログラム}, label={code_check}]
+# Remove the 6th column (x6) from the data
+dat_rm <- dat[, -6]
+
+# Prepare the explanatory variables as a matrix (x1 to x5)
+x <- as.matrix(dat_rm[, 1:5])
+
+# Run the linear model (lm) and output the summary of the results
+model_summary <- summary(lm(y ~ x))
+
+# Print the summary of the linear model
+print(model_summary)
+\end{lstlisting}
+
+この出力結果は以下のようになった。
+
+\begin{lstlisting}[caption={コード\ref{code_check}の実行結果}, label={code_output_check}]
+Call:
+lm(formula = y ~ x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.13350 -0.35713 -0.06654  0.38179  0.86331 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)   
+(Intercept)  1.352e-16  7.959e-02   0.000  1.00000   
+xx1         -1.491e-01  1.467e-01  -1.016  0.31546   
+xx2         -2.350e-01  1.249e-01  -1.881  0.06705 . 
+xx3          3.982e-01  1.550e-01   2.569  0.01392 * 
+xx4         -3.543e-01  1.102e-01  -3.215  0.00254 **
+xx5          3.552e-02  9.236e-02   0.385  0.70250   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5457 on 41 degrees of freedom
+Multiple R-squared:  0.7346,    Adjusted R-squared:  0.7022 
+F-statistic:  22.7 on 5 and 41 DF,  p-value: 7.624e-11
+\end{lstlisting}
+
+まず実行結果のcoefficientsを確認するとPrがp値を求めていることが分かる。
+ここを確認すると0.05より小さいのは\(x_3\)と\(x_4\)であることが分かる。
+
+また、回帰全体の有効性を確認するには最後の行を確認すれば良い。
+これによると、p値が0.05を大きく下回っているため少なくとも1つの回帰係数は有意差を持っていることが分かる。
+
+\subsection{(3)}
+以下に実装したプログラムを乗せる。

@@ -1,0 +1,127 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{float}
+\usepackage{listings}
+
+% lstlistingのsetting
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+% タイトル
+\begin{center}
+{\Large{\bf グラフとネットワーク第2回課題}} \\
+{\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
+{\bf 2311081 木村慎之介} \\
+\end{center}
+
+\section*{問2}
+\subsection*{回答}
+\hspace{1em}配偶者は4回握手をした。
+
+\subsection*{考え方}
+\hspace{1em}まず、全ての人は配偶者と握手をしておらず、かつ私以外の9人の握手の回数は異なることから、私以外の人は0から8回握手をしたことがわかる。 \\
+\hspace{1em}さて、ここで私夫婦以外の任意の夫婦を1組ずつ選びながら以下の操作を行う。
+
+\begin{enumerate}
+  \item 選んだ夫婦から片方を選んで、いままでに選ばれていない夫婦と私夫婦全員と握手を行う。
+  \item まだ選ばれていない夫婦を1組選んで、操作1に戻る。
+\end{enumerate}
+
+なお、上の操作で任意の夫婦を選んできても、配偶者の握手回数に影響はないため一般性を失わない。 \\
+\hspace{1em}以上の操作を行った結果をノードを人に、辺を握手をした人の間に引きグラフとして表現をすると以下のグラフが出来上がる。
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{graph/Graph.gv.png}
+  \caption{参加者と握手の関係を表すグラフ}
+  \label{picture_hadshake_graph}
+\end{figure}
+
+\hspace{1em}図\ref{picture_hadshake_graph}の配偶者ノードの次数に着目すると4であることがわかるので、配偶者は4回握手したと言える。
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\numberwithin{equation}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+%\def\thesection{付録\Alph{section}}
+\makeatletter 
+\newcommand{\section@cntformat}{付録 \thesection:\ }
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\end{document}

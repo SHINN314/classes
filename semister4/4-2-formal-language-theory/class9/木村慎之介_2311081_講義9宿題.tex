@@ -1,0 +1,106 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義9宿題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{Pumping Lemma 2の証明}
+        \hspace{1em}言語\(L\)が正則であると仮定する。
+        この時\(L\)を受理するDFA \(A=(Q, \Sigma, \delta, q_0, F)\)が存在する。
+        ここで\(c = |Q| \geq 1\)とし、任意に\(w_1, w_2, w_3 \in \Sigma^{*}\)を取ってくる。
+        なお、\(|Q| \geq 1\)であることは初期状態\(q_0\)が必ず\(Q\)に含まれることから明らか。 \\
+        \indent さて、文字列\(w_1w_2w_3 = a_{11} \cdots a_{1m}a_{21} \cdots a_{2n}a_{31} \cdots a_{3l}\ (\text{ただし}w_1 = a_{11} \cdots a_{1m},\ w_2 = a_{21} \cdots a_{2n},\ w_3 = a_{31} \cdots a_{3l},\ a_{11}, \cdots ,a_{3l} \in \Sigma)\)を受理する過程は、状態\(q_0, q_{11}, \cdots, q_{1m}, q_{21}, \cdots, q_{2n}, q_{31}, \cdots, q_{3l-1} \in Q\)と受理状態\(q_{3l} \in F\)を用いて\(q_0 \xrightarrow{a_{11}} q_{11} \xrightarrow{a_{12}} \cdots \xrightarrow{a_{1m}} q_{1m} \xrightarrow{a_{21}} q_{21} \xrightarrow{a_{22}} \cdots \xrightarrow{a_{2n}} q_{2n} \xrightarrow{a_{31}} q_{31} \xrightarrow{a_{32}} \cdots \xrightarrow{a_{3l}} q_{3l}\)と表せる。
+        ここで\(|w_2| = n \geq c\)の時、鳩の巣原理より\(q_{2i} = q_{2j}\)となる\(1 \leq i < j \leq n\)が存在する。 \\
+        \indent 以上の議論を踏まえて\(u, x, v\)をそれぞれ\(u = a_{21} \cdots a_{2i}\ , x = a_{2\ i+1} \cdots a_{2j}\ ,v = a_{2\ j+1} \cdots a_{3l}\)とする。
+        ただし、\(u, x, v\)は\(\hat{\delta}(u, q_{1, m}) = q_{2i} \ , \hat{\delta}(x, q_i) = q_{2i} \ , \hat{\delta}(v, q_{2i}) = q_{2n}\)を満たすことに注意する。
+        \(u, x, v\)を以上のように持ってくると、\(w_2 = a_{21} \cdots a_{2i} a_{2\ i+1} \cdots a_{2j} a_{2\ j+1} \cdots a_{2n} = uxv\)と表せる。
+        このとき\(w_1w_2w_3 \in L\)を仮定すると、任意の\(t \geq 0\)に対して\(\hat{\delta}(x, q_{2i}) = q_{2i}\)という性質から\(\hat{\delta}(x^t, q_i) = q_i\)となるので、初期状態から\(w_1ux^tvw_3\)を入力として受け取ると次のように状態が遷移する。
+        
+        \begin{align*}
+            \hat{\delta}(w_1ux^tvw_3\ , q_0) &= \hat{\delta}(ux^tvw_3\ , \hat{\delta}(w_1 ,q_0) = q_{1m}) \\
+                                             &= \hat{\delta}(x^tvw_3\ , \hat{\delta}(u, q_{1m}) = q_{2i}) \\
+                                             &= \hat{\delta}(vw_3\ , \hat{\delta}(x^t, q_{2i}) = q_{2i}) \\
+                                             &= \hat{\delta}(w_3\ , \hat{\delta}(v, q_{2i}) = q_{2n}) \\
+                                             &= q_{3l}
+        \end{align*}
+
+        よって\(q_{3l} \in F\)であるため\(\forall t \geq 0\ [\ w_1ux^tvw_3 \in L\ ]\)が示された。
+        逆に\(\forall t \geq 0\ [\ w_1ux^tvw_3 \in L\ ]\)を仮定する。
+        ここで、\(t = 1\)とすれば\(u, x, v\)の定義から\(w_1ux^1vw_3 = w_1w_2w_3\)となる。
+        仮定より\(w_1ux^1vw_3 = w_1w_2w_3 \in L\)となる。 \\
+        \indent また\(x\)は\(1 \leq i < j\)であることから\(|x| \geq 1\)となり\(x \neq \lambda\)が示される。 \\
+        \hspace{1em}以上よりPumping Lemma 2が証明された。
+
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

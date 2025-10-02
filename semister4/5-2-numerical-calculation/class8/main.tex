@@ -1,0 +1,649 @@
+\documentclass[a4paper]{jsarticle}
+\usepackage{otf}
+\usepackage[dvips]{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{fancyheadings}
+\usepackage{enumerate}
+\usepackage{ascmac}
+\usepackage{color}
+\usepackage{listings, jlisting}
+\usepackage{bm}
+\usepackage{physics}
+%\usepackage{footmisc}
+\lhead{「数値計算」(CSプログラム) 第8回 演習課題}
+\chead{}
+\rhead{\thepage}
+\pagestyle{fancy}
+\cfoot{}
+\addtolength{\textheight}{40pt}
+\setlength{\headsep}{10pt}
+\setlength{\voffset}{-10pt}
+\setlength{\topmargin}{-30pt}
+\lstset{% 
+language={C}, 
+backgroundcolor={\color[gray]{.85}},% 
+basicstyle={\footnotesize\ttfamily},% 
+identifierstyle={\footnotesize\ttfamily},% 
+commentstyle={\footnotesize\ttfamily \color[rgb]{0.5,0.5,0.5}},% 
+keywordstyle={\footnotesize\ttfamily \color[rgb]{0,0,0}},% 
+ndkeywordstyle={\footnotesize\ttfamily},% 
+stringstyle={\footnotesize\ttfamily}, 
+frame={tb}, 
+breaklines=true, 
+columns=[l]{fullflexible},% 
+%numbers=left,% 
+numbers=none,% 
+xrightmargin=0zw,% 
+xleftmargin=3zw,% 
+numberstyle={\scriptsize},% 
+stepnumber=1, 
+numbersep=1zw,% 
+escapechar={\^},%
+morecomment=[l]{//}% 
+} 
+\def\TODO{\textbf{\LARGE TODO: }}
+\def\Ctrl{\texttt{Ctrl}}
+\def\zaki{\CID{14290}}
+\def\b{\mathbf{b}}
+\def\r{\mathbf{r}}
+\def\x{\mathbf{x}}
+\def\y{\mathbf{y}}
+\title{「数値計算」(CSプログラム) 第8回演習課題}
+\author{学籍番号:2311081 木村 慎之介}
+\date{2024年12月12日}
+\begin{document}
+\maketitle
+
+\section*{演習 1: LU分解のプログラム}
+
+\subsection*{課題1}
+作成したLU分解のコードを以下に載せる。
+\begin{lstlisting}[caption={\texttt{単純なLU分解のプログラム}},numbers=left]
+for(int i = 0; i < n; i++) {
+  // 行列Uに値を代入
+  for(int j = 0; j < i; j++) {
+    // 下三角には0を代入
+    U[i][j] = 0;
+  }
+
+  for(int j = i; j < n; j++) {
+    U[i][j] = tmp[i][j];
+  }
+
+  // tmpの行列を更新
+  double diagonal_component = tmp[i][i]; // 対角成分の値をメモ
+
+  for(int j = i; j < n; j++) {
+    tmp[j][i] = tmp[j][i]/diagonal_component;
+  }
+
+  for(int j = i+1; j < n; j++) {
+    for(int k = i+1; k < n; k++) {
+      tmp[j][k] = tmp[j][k] - tmp[i][k]*tmp[j][i];
+    }
+  }
+
+  // 行列Lに値を代入
+  for(int j = 0; j < i; j++) {
+    // 上三角には0を代入
+    L[j][i] = 0;
+  }
+
+  for(int j = i; j < n; j++) {
+    L[j][i] = tmp[j][i];
+  }
+}
+\end{lstlisting}
+
+このコードを実行すると以下の結果を得た。
+
+\begin{lstlisting}[caption={\texttt{LU分解プログラムの実行結果}},numbers=left]
+L:
+ 1.00  0.00  0.00
+ 2.00  1.00  0.00
+ 3.00  5.00  1.00
+--
+U:
+ 1.00  2.00  3.00
+ 0.00 -1.00 -2.00
+ 0.00  0.00  3.00
+--
+checkLU: Good
+checkAnswer: Good
+
+\end{lstlisting}
+
+この結果からLU分解を正しく実行できていることがわかる。
+
+\section*{演習 2: ピボット選択付きLU分解}
+
+\subsection*{課題2}
+
+作成したピボット選択付きLU分解のコードは以下のとおりである。
+
+\begin{lstlisting}[caption={\texttt{ピボット選択付きLU分解のプログラム}}, numbers=left, label={pivot_LU}]
+  void LUDecomposition ( const int n, double A [ n ] [ n ], double L [ n ] [ n ], double U [ n ] [ n ], double r [ n ] )
+{
+  // Copy A to tmp to preserve A
+  double tmp [ n ] [ n ];
+  for ( int i = 0; i < n; i++ ) {
+    for ( int j = 0; j < n; j++ ) {
+      tmp [ i ] [ j ] = A [ i ] [ j ];
+    }
+  }
+
+  // Prepare r for pivoting
+  for ( int i = 0; i < n; i++ ) {
+    r [ i ] = i;
+  }
+
+  //
+  // Write the code for LU decomposition here
+  //
+  for(int i = 0; i < n; i++) {
+    // ピボット選択
+    double pivot = tmp[i][i];
+    int pivot_row = i;  
+
+    for(int j = i; j < n; j++) {
+      if(abs(pivot) < abs(tmp[j][i])) {
+        pivot = tmp[j][i];
+        pivot_row = j;
+      }
+    }
+
+    // 入れ替えの記録
+    double memo_row = r[i];
+    r[i] = r[pivot_row];
+    r[pivot_row] = memo_row;
+
+    // 行の入れ替え
+    for(int j = 0; j < n; j++) {
+      double memo_content = tmp[i][j];
+      tmp[i][j] = tmp[pivot_row][j];
+      tmp[pivot_row][j] = memo_content;
+    }
+
+    // 行列Aの行の入れ替え
+    for(int j = 0; j < n; j++) {
+      double memo_content = A[i][j];
+      A[i][j] = A[pivot_row][j];
+      A[pivot_row][j] = memo_content;
+    }
+
+    // 行列Uに値を代入
+    for(int j = 0; j < i; j++) {
+      // 下三角には0を代入
+      U[i][j] = 0;
+    }
+
+    for(int j = i; j < n; j++) {
+      U[i][j] = tmp[i][j];
+    }
+
+    // tmpの行列を更新
+    double diagonal_component = tmp[i][i]; // 対角成分の値をメモ
+
+    for(int j = i; j < n; j++) {
+      tmp[j][i] = tmp[j][i]/diagonal_component;
+    }
+
+    for(int j = i+1; j < n; j++) {
+      for(int k = i+1; k < n; k++) {
+        tmp[j][k] = tmp[j][k] - tmp[i][k]*tmp[j][i];
+      }
+    }
+
+    // 行列Lに値を代入
+    for(int j = 0; j < i; j++) {
+      // 上三角には0を代入
+      L[j][i] = 0;
+    }
+
+    for(int j = i; j < n; j++) {
+      L[j][i] = tmp[j][i];
+    }
+  }
+
+}
+\end{lstlisting}
+
+課題1からの変更点はソースコード\ref{pivot_LU}の19行目から48行目にある。
+まずピボットを探索するようにした。
+その際に、ピボットとなる行のインデックスを変数に入れておくようにした。
+次に\(\bm{r}\)ベクトルのi番目の要素とpivot\_index番目の要素を入れ替えた。
+これが行の入れ替えを記録するプログラムに相当する。
+最後に行列tmpと行列Aのi行目とpivoi\_index行目の要素を入れ替えることで行の入れ替えを行った。
+
+以下コードの実行結果である。
+
+\begin{lstlisting}[caption={\texttt{ピボット選択付きLU分解のコードの実行結果}}, numbers=left, label={pivot_LU_result}]
+  L:
+ 1.00  0.00  0.00
+ 0.67  1.00  0.00
+ 0.33  0.50  1.00
+--
+U:
+ 3.00  1.00  2.00
+ 0.00  3.33  2.67
+ 0.00  0.00  1.00
+--
+checkLU: Good
+checkAnswer: Good
+
+\end{lstlisting}
+
+\section*{演習 3: 反復法による連立方程式の解法}
+
+反復法についてもプログラムを作成してみよう。
+
+\subsection*{課題 3: ヤコビ法、ガウス・ザイデル法、SOR法の収束速度の比較}
+
+以下に作成したプログラムを載せる。
+
+\begin{lstlisting}[caption={\texttt{作成した全プログラム}}, numbers={left}, label={all_solution_code}]
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <unistd.h>
+
+#define N ( 3 )
+#define Eps ( 1e-8 )
+
+// 反復回数
+int repetition = 100;
+
+
+// 行列の出力
+void printMatrix ( const int n, double M [ n ] [ n ] )
+{
+  for ( int i = 0; i < n; i++ ) {
+    for ( int j = 0; j < n; j++ ) {
+      printf ( "%c%2.2f%s", ( M [ i ] [ j ] < 0 ) ? '-' : ' ', fabs ( M [ i ] [ j ] ), ( j == n - 1 ) ? "\n" : " " );
+    }
+  }
+  printf ( "--\n" );
+}
+
+// 列ベクトルの表示
+void printVector ( const int n, double v [ n ] )
+{
+  for ( int i = 0; i < n; i++ ) {
+    printf ( "%c%2.2f\n", ( v [ i ] < 0 ) ? '-' : ' ', fabs ( v [ i ] ) );
+  }
+  printf ( "--\n" );
+}
+
+// ヤコビ法による解法
+void jacob(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int j = 0; j < n; j++) {
+            x[j] = x_new[j];
+        }
+
+        if(is_convergence(n, delta_vector, Eps)) {
+            break;
+        }
+    }
+}
+
+// ガウス・ザイデル法による解法
+void gs(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+
+    for(int i = 0; i < n; i++) {
+        // x_newの初期化
+        x_new[i] = x[i];
+    }
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x_new[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int j = 0; j < n; j++) {
+            x[j] = x_new[j];
+        }
+
+        if(is_convergence(n, delta_vector, Eps)) {
+            break;
+        }
+    }
+}
+
+// SOR法による解法
+void sor(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+    double w = 1.5; // 加速パラメータ
+
+    for(int i = 0; i < n; i++) {
+        // x_newの初期化
+        x_new[i] = x[i];
+    }
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x_new[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int i = 0; i < n; i++) {
+            x[i] = w*x_new[i] + (1 - w)*x[i];
+
+            // x_newの更新
+            x_new[i] = x[i];
+        }
+
+        if(is_convergence(n, delta_vector, Eps)) {
+            break;
+        }
+    }
+}
+
+int main() {
+    double A [ N ] [ N ] = { { 3, 2, 1 }, { 1, 3, -2 }, { 2, -1, 4 } };
+    double b [ N ] = { 4, 6, -3 };
+    double x[N] = {0, 0};
+
+    printf("first x vector\n");
+    printVector(N, x);
+
+    // ヤコビ法による解の導出
+    printf("jacob\n");
+    jacob(N, A, b, x);
+    printVector(N, x);
+
+    // ガウス・ザイデル法による解の導出
+    printf("gs\n");
+    gs(N, A, b, x);
+    printVector(N, x);
+
+    // SOR法による解の導出
+    printf("sor\n");
+    sor(N, A, b, x);
+    printVector(N, x);
+
+    return 0;
+}
+\end{lstlisting}
+
+1~10行目まではヘッダファイルのインクルードやグローバル変数が定義されている。
+以下、各種手法による方程式のプログラムを説明する。
+はじめにヤコビ法のプログラムを説明する。
+関数のコードは以下のとおりである。
+
+\begin{lstlisting}[caption={ヤコビ法のプログラム}, numbers=left, label={jacob_code}]
+// ヤコビ法による解法
+void jacob(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int j = 0; j < n; j++) {
+            x[j] = x_new[j];
+        }
+    }
+}
+\end{lstlisting}
+
+このコードでは繰り返しを用いて更新した値をx\_newという配列に保存し、すべての更新が終わったらxに格納するようなプログラムとなっている。
+次にガウス・デイザル法によるプログラムを載せる。
+
+\begin{lstlisting}[caption={\texttt{ガウス・デイザル法のプログラム}}, numbers=left, label={gd_solution}]
+// ガウス・ザイデル法による解法
+void gs(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+
+    for(int i = 0; i < n; i++) {
+        // x_newの初期化
+        x_new[i] = x[i];
+    }
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x_new[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int j = 0; j < n; j++) {
+            x[j] = x_new[j];
+        }
+    }
+}
+\end{lstlisting}
+
+このプログラムではさっきとは異なり、13行目から22行目におけるx\_newの値を求めるにあたって、更新中の値を用いるようにプログラムを変更した。
+最後にSOR法による連立方程式の解を求めるプログラムを載せる。
+
+\begin{lstlisting}[caption={\texttt{SOR法のプログラム}}, numbers=left, label={sor_solution}]
+// SOR法による解法
+void sor(const int n, double A[n][n], double b[n], double x[n]) {
+    double delta_vector[n]; // 左辺と右辺の差のベクトル
+    double delta_content = 0; // delta_vectorを求めるときに使う変数
+    double x_new[n]; // 更新後のxベクトル
+    double w = 1.5; // 加速パラメータ
+
+    for(int i = 0; i < n; i++) {
+        // x_newの初期化
+        x_new[i] = x[i];
+    }
+
+    for(int p = 0; p < repetition; p++) {
+        for(int i = 0; i < n; i++) {
+            // x_newベクトルの計算
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                if(j != i) {
+                   sum += A[i][j]*x_new[j];
+                }
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];
+        }
+
+        // 解の更新
+        for(int i = 0; i < n; i++) {
+            x[i] = w*x_new[i] + (1 - w)*x[i];
+
+            // x_newの更新
+            x_new[i] = x[i];
+        }
+    }
+}
+\end{lstlisting}
+
+SOR法のプログラムの基本はガウス・ザイデル法と同じである。
+ガウス・ザイデル方との違いは26行目から31行目にある。
+ここでは解の更新時に加速パラメータを用いて一つ前の解の影響も含めている点である。
+
+以上3つのプログラムを用いて連立方程式
+
+\begin{equation*}
+  \begin{pmatrix}
+    3 & 2 & 1 \\
+    1 & 3 & -2 \\
+    2 & -1 & 4 
+  \end{pmatrix}
+  \begin{pmatrix}
+    x \\
+    y \\
+    z
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    4 \\
+    6 \\
+    -3
+  \end{pmatrix}
+\end{equation*}
+
+の解を求めたときの出力結果をいかに載せる。
+
+\begin{lstlisting}[caption={\texttt{プログラムの実行結果}}, numbers=left, label={repetition_solution_result}]
+first x vector
+ 0.00
+ 0.00
+ 0.00
+--
+jacob
+ 1.00
+ 1.00
+-1.00
+--
+gs
+ 1.00
+ 1.00
+-1.00
+--
+sor
+ 1.00
+ 1.00
+-1.00
+--
+
+\end{lstlisting}
+
+どの方法でも確かに解を求められていることがわかる。
+
+\section*{演習 4: 反復法による収束性の証明}
+
+\subsection*{課題 4: 対角優位な場合のヤコビ法の収束性の証明}
+
+\subsubsection*{1.a}
+反復式に使われている行列\(M\)と\(N\)は\(D,L,U\)を用いて次のように表すことができる。
+
+\begin{align*}
+  &M = D^{-1}(L + U) \\
+  &N = D^{-1}
+\end{align*}
+
+\subsubsection*{1.b}
+1.aで示した\(M\)と\(N\)の式を利用すると
+
+\begin{align*}
+  D &= 
+  \begin{pmatrix}
+    4 & 0 \\
+    0 & 2
+  \end{pmatrix} \\
+  L &= 
+  \begin{pmatrix}
+    0 & 0 \\
+    1 & 0
+  \end{pmatrix} \\
+  U &= 
+  \begin{pmatrix}
+    0 & 1 \\
+    0 & 0
+  \end{pmatrix}
+\end{align*}
+
+であることから\(M\)と\(N\)の行列は
+
+\begin{align*}
+  M &= 
+  \begin{pmatrix}
+    0 & \frac{1}{4}\\
+    \frac{1}{2} & 0
+  \end{pmatrix} \\
+  N &= 
+  \begin{pmatrix}
+    \frac{1}{4} & 0 \\
+    0 & \frac{1}{2}
+  \end{pmatrix}
+\end{align*}
+
+と求まる。
+
+\subsubsection*{1.c}
+ヤコビ法を用いて\(\bm{x}^{(1)}, \bm{x}^{(2)}, \bm{x}^{(3)}\)を求めると以下のようになる。
+なお、この解はコードを用いて求めた。
+
+\subsubsection*{2.d}
+以下のように証明される。
+
+\begin{align*}
+  \|A\bm{x}\| &= \max_{1 \leq i \leq n} |\sum_{j = 1}^{n}a_{ij}x_{j}| \\
+              &\leq \max_{1 \leq i \leq n} \sum_{j = 1}^{n}|a_{ij}x_{j}| \text{(三角不等式を利用)} \\
+              &\leq \max_{1 \leq i \leq n} (\max_{1 \leq i \leq n}|a_j| \times \sum_{j=1}^{n}|a_{ij}|) \\
+              &= \max_{1 \leq i \leq n}|a_j| \times \max_{1 \leq i \leq n}(\sum_{j = 1}^{n}a_{ij}) \\
+              &= \|A\| \|\bm{x}\|
+\end{align*}
+
+\subsubsection*{2.e}
+\(M\)の定義を用いると次のように証明できる。
+
+\begin{align*}
+  \|M\| &= \left \|
+  \begin{pmatrix}
+    0 & \frac{1}{a_{11}}a_{12} & \dots & \frac{1}{a_{11}} \\
+    \frac{1}{a_{22}}a_{21} & 0 & \dots & \frac{1}{a_{22}}a_{2n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \frac{1}{a_{nn}}a_{n1} & \frac{1}{a_{nn}}a_{n2} & \dots & 0
+  \end{pmatrix} \right \| \\
+  &= \max_{1 \leq i \leq n} \sum_{j = 1}^{n} \left | m_{ij} \right | \\
+  &= \max_{1 \leq i \leq n} \frac{1}{\left |a_{ii} \right |} \sum_{j = 1, j \neq i}^{n} \left | a_{ij} \right | \\
+  &\leq \frac{1}{\left | a_{ii} \right |} \times \left | a_{ii} \right | \text{対角優位性より} \\
+  &= 1
+\end{align*}
+
+\subsubsection*{2.f}
+
+
+\end{document}

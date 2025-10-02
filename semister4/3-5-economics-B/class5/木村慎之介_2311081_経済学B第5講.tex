@@ -1,0 +1,106 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 経済学B 第5講課題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{課題1}
+        \hspace{1em}問題文より\(\rho = 0\)、\(r = 0.05\)と与えられているため、これを株価の理論値の単純なケースに当てはめると
+        \begin{eqnarray*}
+            p_t &= \frac{d}{r + \rho} \\
+                &= \frac{d}{0.05}
+        \end{eqnarray*}
+        となる。したがって単純なケースから導かれる株価と配当の比率は\(\frac{p_t}{d} = 20\)となるため
+        現実の株価は高すぎると判断することができる。
+
+    \section*{課題2}
+        \subsection*{設問1}
+            \hspace{1em}トービンのq理論とは、企業が設備投資を行うかどうかをq値と呼ばれる指標を用いて決定すると言った内容の
+            理論である。なお、q値は以下のように定義される。
+            \begin{equation*}
+                q = \frac{\text{企業の市場価値(株式時価総額+負債総額)}}{資本の再取得価格}
+            \end{equation*}
+            \hspace{1em}\(q\)が\(1\)よりも小さい場合は資本の再取得価格(つまり資本ストックの価値)のほうが企業の市場価値
+            よりも小さいと判断できるため設備に対する投資を控える判断を行う。逆に\(1\)よりも大きい場合、企業は
+            設備投資を積極的に行うといった判断を下す。
+
+        \subsection*{設問2}
+            \hspace{1em}マクロ経済学では1つの国の土地の広さは固定されているため土地は設備投資には含まれない。つまりトービンのq値は次のように書くことができる。
+            \begin{equation}
+                q = \frac{\text{株式時価総額 - 土地の評価額}}{機械・設備の再取得価格}
+            \end{equation}    
+
+
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

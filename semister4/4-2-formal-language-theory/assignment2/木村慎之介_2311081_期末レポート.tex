@@ -1,0 +1,154 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 期末レポート}} \\
+        {\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 2年} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \begin{enumerate}
+      \item \hspace{1em}Pumping Lemmaとは言語\(L\)に対し、\(L\)がある言語クラスに属するならば、\(L\)に含まれる十分に長い文字列\(w\)はある部分文字列\(x\)を含み、\(x\)を\(0\)回以上繰り返して得られる文字列もまた\(L\)に含まれるという定理である。
+            この定理の対偶を用いると、言語\(L\)がある言語クラスに属さないことを証明することができる。(139文字) \\
+      \item \begin{enumerate}
+              \item \hspace{1em}正則言語のクラスが補集合と積集合について閉じていることと、正規表現で表すことができる言語は正則であることから、\(L_\text{prime}\)が正則であるとき\(L_1 = \overline{L_\text{prime}} \cap a^{+}b^{+}a^{+}b^{+}\)は正則になる。 \\
+              \item \hspace{1em}背理法を用いて証明する。 \\
+                    \hspace{1em}\(L_\text{prime}\)が正則であると仮定する。
+                    このとき言語\(L_1 = \overline{L_\text{prime}} \cap a^{+}b^{+}a^{+}b^{+}\)は前問より正則であると言える。
+                    このときPumping Lemmaよりある定数\(c \geq 1\)が存在し、任意の文字列\(w \in L_1\)に対して\(|w| \geq c\)ならば\((|ux| \geq c) \land (x \neq \lambda) \land (\forall t \geq 0,ux^tv \in L_1)\)を満たす\(u, x, v \in \Sigma^{*}\)によって\(w = uxv\)と表すことができる。 \\
+                    \hspace{1em}さて、文字列\(w' = a^mb^na^mb^n\ (m + n = c)\)は\(w' \in L_1\)であり\(|w'| \geq c\)であるから\(|ux| \geq c, x \neq \lambda, \forall t \geq 0, ux^tv \in L_1\)満たす文字列\(u, x, v \in \Sigma^{*}\)によって\(w' = uxv\)と表される。
+                    ここで\(x\)は\(|ux| \geq c, x \neq \lambda\)であることから\(x\)は\(a^p, a^pb^q, b^q\ (1 \leq p \leq m, 1 \leq q \leq n)\)のいづれか3つのパターンで表される。
+                    しかしながら
+                    \begin{enumerate}
+                      \item \(x = a^p\)のとき\(ux^2v = a^{m+p}b^na^mb^n\)となり\(ux^2v \notin \overline{L_\text{prime}}\)であるから\(ux^2v \notin L_1\)
+                      \item \(x = a^pb^q\)のとき\(ux^2v = a^mb^qa^pb^na^mb^n\)となり\(ux^2v \notin \overline{L_\text{prime}}\)であるから\(ux^2v \notin L_1\)
+                      \item \(x = b^q\)のとき\(ux^2v = a^mb^{n+q}a^mb^n\)となり\(ux^2v \notin \overline{L_\text{prime}}\)であるから\(ux^2v \notin L_1\)
+                    \end{enumerate}
+                    であるから、\(\forall t \geq 0,ux^tv \in L_1\)が満たされない。 \\
+                    \hspace{1em}よって矛盾が生じたため\(L_\text{prime}\)は正則ではない。 \\
+              \item \hspace{1em}背理法を用いて証明する。 \\
+                    \hspace{1em}\(L_\text{sq}\)が正則であると仮定する。
+                    このとき\(L_2 = L_\text{sq} \cap a^{+}b^{+}a^{+}b^{+}\)もまた正則になるので、ある定数\(c \geq 1\)が存在して任意の文字列\(w \in L_2\)に対して\(|w| \geq c\)ならば\((|ux| \leq c) \land (x \neq \lambda) \land (\forall t \geq 0, ux^tv \in L_2)\)を満たす\(u, x, v \in \Sigma\)によって\(w = uxv\)と表すことができる。 \\
+                    \hspace{1em}さて、文字列\(w' = a^{m}b^{n}a^{m}b^{n}\ (m + n = c)\)は\(L_2\)に含まれるため、\((|ux| \leq c) \land (x \neq \lambda) \land (\forall t \geq 0, ux^tv \in L_2)\)を満たす\(u, x, v \in \Sigma\)によって\(w' = uxv\)と表すことができる。
+                    しかし、xのパターンは2(b)で示した通り\(x = a^p, a^pb^q, b^q (a \geq 1, b \geq 1, a + b \leq c)\)の3通りしかなく、そのいずれの場合においても\(ux^2v \notin L_\text{sq}\)となるため\(ux^2v \notin L_2\)となってしまい矛盾が生じる。 \\
+                    \hspace{1em}したがって\(L_\text{sq}\)は正則ではない。 \\
+              \item 文脈自由言語ではないと考察する。
+                    文脈自由言語におけるPumping Lemmaを用いると\(L_{sq}\)は文脈自由言語ではないことがわかる。
+                    そして、文脈自由言語においても補集合に関する閉包性があれば\(\Sigma^{*} \ L_{sq}\)も文脈自由言語ではなくなる。
+                    以上より、文脈自由言語ではないと考察する。
+            \end{enumerate} 
+
+      \item \begin{enumerate}
+              \item \hspace{1em}正則言語のクラスは和について閉じていて、かつ言語\(L(A^{q}_\text{sqrt})\)は\(\text{FA}\ A^{q}_\text{sqrt}\)によって受理される言語であるため正則である。
+                    したがって\(\sqrt{L} = \bigcup_{q \in Q}L(A_\text{sqrt}^{q})\)と表されるとき\(\sqrt{L}\)は正則であると言える。 \\
+              \item \hspace{1em}\(ww\ (w \in \Sigma^{*})\)が\(L\)を受理する\(\text{DFA}\ A\)に受理されるとき、ある状態\(q \in Q\)が存在して\(\hat{\delta}(q_0, w) = q \land \hat{\delta}(q, w) \in F\)となる。 \\
+                    \hspace{1em}ここで\(A_\text{sqrt}^{q}\)は\(\hat{\delta}(q_0, w) \land \hat{\delta}(q, w) \in F\)であるような文字列\(w \in \Sigma^{*}\)を受理するオートマトンであることに注意すると、\(w \in \bigcup_{q \in Q}L(A_\text{sqrt}^{q})\)であるとき、ある状態\(q \in Q\)が存在して\(\hat{\delta}(q_0, w) = q \land \hat{\delta}(q, w) \in F\)を満たす。
+                    これはつまり\(ww \in L\)であることど同義である。 \\
+                    \hspace{1em}逆に\(w \notin \bigcup_{q \in Q}L(A_\text{sqrt}^{q})\)のとき、任意の状態\(q \in Q\)に対して\(\hat{\delta}(q_0, w) \neq q \lor \hat{\delta}(q, w) \notin F\)を満たす。
+                    これは\(ww \notin L\)であることと同義である。 \\
+                    \hspace{1em}したがって\(\sqrt{L} = \bigcup_{q \in Q}L(A_\text{sqrt}^{q})\)が示された。 \\
+            \end{enumerate}
+      \item \begin{enumerate}
+                  \item \hspace{1em}\(L\)を受理するDFAの一つを\(A = (Q, \Sigma, \delta, q_0, F)\)とする。
+                        さて、\(q \in Q\)に対して2つの\(\text{FA}\ A_{1q} = (Q, \Sigma, q_0, \delta, {q}), A_{2q} = (Q, \Sigma, q, \delta', F)\)を考える。 \\
+                        \hspace{1em}まず\(A_{1q}\)について説明する。
+                        \(A_{1q}\)はDFAであり、\(w \in \Sigma^{*}\)を入力したときに\(\hat{\delta}(q_0, w) = q\)となる文字列を受理する。\\
+                        \hspace{1em}次に\(A_{2q}\)について説明する。
+                        \(A_{2q}\)はNFAであり、状態遷移関数\(\delta'\)は\(\forall a \in \Sigma, \forall q \in Q, \delta'(q, a) = \{p \in Q\ |\ \exists a' \in \Sigma, p = \delta(q, a')\}\)と定義する。
+                        このように定義することで\(\hat{\delta'}(q, w) = \{p \in Q\ |\ \text{状態\(q\)からちょうど\(|w|\)文字で行くことのできる状態}\}\)となる。
+                        このことを入力文字列\(w \in \Sigma^{*}\)の文字数に関する数学的帰納法で証明する。 \\
+                        \hspace{1em}(基底)\ \(w = \lambda\)のとき\(\hat{\delta'}(q, \lambda) = \{ q \}\)となり、これは\(q\)から\(0\)文字で行くことのできる状態に相当する。 \\
+                        \hspace{1em}(帰納ステップ)\ \(w = a_1a_2 \cdots a_{n-1}a_{n}\)のとき
+                        \begin{equation*}
+                              \hat{\delta'}(q, w) = \{ \hat{\delta}(q, aa \cdots aa), \hat{\delta}(q, aa \cdots ab), \cdots , \\ \hat{\delta}(q, bb \cdots bb)\}
+                        \end{equation*}
+                        を仮定する。
+                        \(w = a_1a_2 \cdots a_na_{n+1}\)のとき、
+                        \begin{align*}
+                              \hat{\delta}(q, w) &= \bigcup_{p \in \hat{\delta}(q, a_1 \cdots a_n)} \delta(p, a_{n+1}) \\
+                                                 &= \bigcup_{p \in \hat{\delta}(q, a_1 \cdots a_n)} \{\delta(p, a), \delta(p, b)\} \\
+                        \end{align*}
+                        となり、これは\(q\)からちょうど\(n+1\)文字で到達可能な状態の集合となる。 \\
+                        \hspace{1em}以上の事実より\(\text{NFA}\ A_{2q}\)は入力文字列\(w \in \Sigma^{*}\)に対して、\(|w|\)文字で受理状態に到達することができる文字列が1つでも存在する場合に受理することがわかる。 \\
+                        このようにして考えた\(A_{1q}\)と\(A_{2q}\)をDFAに直したオートマトン\(A_{2q}'\)の受理する言語の積集合を受理する直積オートマトンを\(\text{DFA}\ A_{q}^{\text{half}}\)として、\(\text{half}(L) = \bigcup_{q \in Q}L(A_{q}^{\text{half}})\)となることを示す。 \\
+                        \hspace{1em}\(w \in \bigcup_{q \in Q}L(A_{q}^{\text{half}})\)のとき、ある状態\(q \in Q\)が存在して、\(w \in L(A_{1q}) \land w \in L(A_{2q})\)となる。
+                        \(w \in L(A_{1q})\)は\(\hat{\delta}(q_0, w) = q\)と同値であり、\(w \in L(A_{2q})\)は\(\exists x \in \Sigma^{*}, |w| = |x| \land \hat{\delta}(q, x) \in F\)と同値であるので\(w \in \text{half}(L)\)となる。 \\
+                        \hspace{1em}逆に\(w \notin \bigcup_{q \in Q}L(A_{q}^{\text{half}})\)のとき任意の\(q \in Q\)に対して\(w \notin L(A_{1q}) \lor w \notin L(A_{2q})\)となる。
+                        \(w \notin L(A_{1q})\)は\(\hat{\delta}(q_0, w) \neq q\)と同値であり、\(w \notin L(A_{2q})\)は\(\forall x \in \Sigma^{*}, |w| \neq |x| \lor \hat{\delta}(q, x) \notin F\)と同値であるから\(w \notin \text{half}(L)\)となる。
+                        よって、\(\text{half}(L)\)を受理するオートマトンを作ることができたため、\(\text{half}(L)\)は正則である。
+            \end{enumerate}
+    \end{enumerate}
+
+
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

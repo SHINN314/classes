@@ -1,0 +1,536 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{listings, color}
+\usepackage{float}
+
+% ソースコードを制御するpackageなど
+\definecolor{OliveGreen}{rgb}{0.0,0.6,0.0}
+\definecolor{Orenge}{rgb}{0.89,0.55,0}
+\definecolor{SkyBlue}{rgb}{0.28, 0.28, 0.95}
+\lstset{
+  language={C}, % 言語の指定
+  basicstyle={\ttfamily},
+  identifierstyle={\small},
+  commentstyle={\smallitshape},
+  keywordstyle={\small\bfseries},
+  ndkeywordstyle={\small},
+  stringstyle={\small\ttfamily},
+  frame={tb},
+  breaklines=true,
+  columns=[l]{fullflexible},
+  numbers=left,
+  xrightmargin=0zw,
+  xleftmargin=3zw,
+  numberstyle={\scriptsize},
+  stepnumber=1,
+  numbersep=1zw,
+  lineskip=-0.5ex,
+  keywordstyle={\color{SkyBlue}},     %キーワード(int, ifなど)の書体指定
+  commentstyle={\color{OliveGreen}},  %注釈の書体
+  stringstyle=\color{Orenge}          %文字列
+}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 数値計算 演習課題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \section*{演習1}
+        \subsection*{課題1}
+        \hspace{1em}選んだ数字は$314$である。選んだ理由としては円周率の上3桁であることと、ホワイトデーにお返しをあげられるように(すなわちバレンタインデーにチョコをもらえるように)
+        という願掛けを込めて選んだ。まずこれを手計算でビットパターンを計算すると$1.0011101_{(2)} \times 2^{7}$となった。
+        
+        次にcを用いてビットパターンを調べた。コードは以下の通り。
+        \begin{lstlisting}[caption={ビットパターンを求めるcのソースコード}, label=code_1, language=c]
+            #include <stdio.h>
+            #include <string.h>
+
+            #define DOUBLE_BITS ( 64 )
+
+            int bit ( const double x, const int i )
+            {
+            unsigned long v;
+            memcpy ( &v, &x, sizeof ( double ) );
+            return  ( v >> i ) & 1;
+            }
+
+            int main ( void )
+            {
+            double x = 314;
+
+            // IEEE754企画でdouble xを確認
+            for ( int i = DOUBLE_BITS - 1; i >= 0; i-- ) {
+                int b = bit ( x, i );
+                printf ( "%d%s", b, ( i == 63 || i == 52 ) ? " " : "" );
+            }
+            printf ( "\n" );
+            }
+        \end{lstlisting}
+        このコードを実行すると$0 10000000111 0011101000000000000000000000000000000000000000000000$
+        を得た。これを見ると手計算で求めたやつと異なることが分かる。
+
+    \section*{演習2}
+        \subsection*{課題2}
+            \hspace{1em}まず実行したコードを以下に示す。
+            \begin{lstlisting}[caption=diff.cのソースコード,label=code_2, language=C]
+                #include <stdio.h>
+                #include <math.h>
+
+                double f ( double x ) { return sin ( x ); }
+
+                int main ( void )
+                {
+                    double x = M_PI / 4.0;
+                    double h = 1.0;
+
+                    while(h >= 1.0e-14) {
+                        double dfdx = ( f ( x + h / 2.0 ) - f ( x - h / 2.0 ) ) / h;
+                        double relerr = fabs ( dfdx - cos ( x ) ) / fabs ( cos ( x ) );
+                        printf ( "%1.14f %1.14f %1.14f\n", h, dfdx, relerr );
+                        h = h / 10;
+                    }
+
+                }
+            \end{lstlisting}
+
+            \hspace{1em}このコードを実行して得た$h$の値、微分値、相対誤差は以下のようになった。
+            
+            \begin{table}[H]
+                \begin{center}
+                    \caption{計算値}
+                    \begin{tabular}{cccc} \hline
+                        $h$ & 微分値 & 相対誤差 \\ \hline
+                        1.00000000000000 & 0.67801009884209 & 0.04114892279159 \\
+                        0.10000000000000 & 0.70681219018734 & 0.00041661458643 \\
+                        0.01000000000000 & 0.70710383491198 & 0.00000416666145 \\
+                        0.00100000000000 & 0.70710675172370 & 0.00000004166676 \\
+                        0.00010000000000 & 0.70710678089170 & 0.00000000041698 \\
+                        0.00001000000000 & 0.70710678118369 & 0.00000000000405 \\
+                        0.00000100000000 & 0.70710678112817 & 0.00000000008255 \\
+                        0.00000010000000 & 0.70710678090613 & 0.00000000039657 \\
+                        0.00000001000000 & 0.70710677313457 & 0.00000001138722 \\
+                        0.00000000100000 & 0.70710681754349 & 0.00000005141648 \\
+                        0.00000000010000 & 0.70710659549889 & 0.00000026260201 \\
+                        0.00000000001000 & 0.70711214661401 & 0.00000758786028 \\
+                        0.00000000000100 & 0.70710104438376 & 0.00000811306430 \\
+                        0.00000000000010 & 0.70721206668622 & 0.00014889618156 \\
+                        0.00000000000001 & 0.69944050551385 & 0.01084175102922 \\ \hline
+                    \end{tabular}
+                \end{center}
+                \label{2-1-計算値}
+            \end{table}
+
+            \hspace{1em}以上の結果より$h$が小さくなっていくとある程度のところ(今回は$h=0.00001$)までは
+            相対誤差が小さくなっていくが、それを超えると相対誤差が大きくなることが分かる。
+
+    \subsection*{演習3}
+        \subsubsection*{課題3}
+            \hspace{1em}まず実行したソースコードを以下に示す。
+            \begin{lstlisting}[caption=newton法で解を求めるコード, label=code_3, language=c]
+                #include <stdio.h>
+                #include <math.h>
+                #include <stdlib.h>
+
+                #define PI 3.141592653589793238462643
+
+                #define Epsilon ( 1e-14 )
+
+                double newton_method ( double ( *f ) ( double ), double ( *dfdx ) ( double ), double initial_value, double epsilon, double t_value )
+                {
+                double x = initial_value;
+
+                int i = 0;
+                while ( fabs ( f ( x ) ) > epsilon ) {
+                    double error = fabs(x - t_value);
+                    fprintf(stderr, "error: %1.16f\n", error);
+                    double relative_error = fabs(x - t_value) / t_value;
+                    fprintf(stderr, "relative_error: %1.16f\n", relative_error);
+
+                    fprintf ( stderr, "%d %1.16f\n", i, x );
+
+                    x = x - f ( x ) / dfdx ( x );
+                    i++;
+                }
+
+                return x;
+                }
+
+                // 課題3
+                void practice3() {
+                double f ( double x ) { return sin(x); } // solutions is 0
+                double dfdx ( double x ) { return cos(x); }
+
+                double x = newton_method ( f, dfdx, 3.0, Epsilon, PI );
+                printf ( "answer = %1.16f\n", x );
+
+                printf("\n");
+
+                x = newton_method(f, dfdx, 2.0, Epsilon, PI);
+                printf("answer = %1.16f\n", x);
+                }
+
+                int main() {
+                    practice3();
+                    return 0;
+                }
+            \end{lstlisting}
+
+            \hspace{1em}今回の課題では$f(x) = \sin(x) = 0$の解をnewton法で求めた。
+            はじめに初期値を$3.0$としたときの出力を以下に示す
+
+            \begin{table}[H]
+                \begin{center}
+                    \caption{初期値$3.0$のときの$\sin(x) = 0$の解}
+                    \begin{tabular}{cccc} \hline
+                        繰り返し回数 & 近似値 & 絶対誤差 & 相対誤差 \\ \hline
+                        0 & 3.0000000000000000 & 0.1415926535897931 & 0.0450703414486279 \\
+                        1 & 3.1425465430742778 & 0.0009538894844847 & 0.0003036324532382 \\
+                        2 & 3.1415926533004770 & 0.0000000002893161 & 0.0000000000920922 \\ \hline
+                    \end{tabular}
+                \end{center}
+                \label{3-1-初期値3.0のときのsin(x)=0の解}
+            \end{table}
+
+            最終的には$x = 3.1415926535897931$を得た。
+
+            次に初期値を$2.0$としたときの結果を以下に示す。
+
+            \begin{table}[H]
+                \begin{center}
+                    \caption{初期値2.0のときの$\sin(x) = 0$の解}
+                    \begin{tabular}{cccc} \hline
+                        繰り返し回数 & 近似値 & 絶対誤差 & 相対誤差 \\ \hline
+                        0 & 2.0000000000000000 & 1.1415926535897931 & 0.3633802276324186 \\
+                        1 & 4.1850398632615189 & 1.0434472096717258 & 0.3321395625494010 \\
+                        2 & 2.4678936745146660 & 0.6736989790751271 & 0.2144450453515397 \\
+                        3 & 3.2661862775691062 & 0.1245936239793131 & 0.0396593822680812 \\
+                        4 & 3.1409439123176353 & 0.0006487412721579 & 0.0002065007605033 \\
+                        5 & 3.1415926536808043 & 0.0000000000910112 & 0.0000000000289698 \\ \hline
+                    \end{tabular}
+                \end{center}
+                \label{3-2-初期値2.0のときのsin(x)=0の解}
+            \end{table}
+
+            最終的には$x = 3.1415926535897931$を得た。
+
+        \subsection*{課題4}
+            \hspace{1em}まずは実行したコードを以下に記す。
+            \begin{lstlisting}[caption=2つの二次方程式の解をnewton法で求めるコード, label=code_4, language=c]
+                #define Epsilon ( 1e-14 )
+                
+                double newton_method ( double ( *f ) ( double ), double ( *dfdx ) ( double ), double initial_value, double epsilon, double t_value )
+                {
+                  double x = initial_value;
+                
+                  int i = 0;
+                  while ( fabs ( f ( x ) ) > epsilon ) {
+                    fprintf ( stderr, "%d %1.16f ", i, x );
+                    double error = fabs(x - t_value);
+                    fprintf(stderr, "error: %1.16f ", error);
+                    double relative_error = fabs(x - t_value) / t_value;
+                    fprintf(stderr, "relative_error: %1.16f\n", relative_error);
+                
+                
+                    x = x - f ( x ) / dfdx ( x );
+                    i++;
+                  }
+                
+                  return x;
+                }
+
+                void practice4() {
+                double f_1(double x) {
+                    return x*x - 2*x + 1;
+                }
+
+                double f_2(double x) {
+                    return x*x - 3*x + 2;
+                }
+
+                double dfdx_1(double x) {
+                    return 2*x - 2;
+                }
+
+                double dfdx_2(double x) {
+                    return 2*x - 3;
+                }
+
+                double x = newton_method(f_1, dfdx_1, 1.1, Epsilon, 1);
+                printf("answer = %1.16f\n", x);
+
+                printf("\n");
+
+                x = newton_method(f_2, dfdx_2, 1.1, Epsilon, 1);
+                printf("answer = %1.16f\n", x);
+
+                int main() {
+                    practice4();
+                    return 0;
+                }
+
+                }
+            \end{lstlisting}
+
+            \hspace{1em}まず$f(x) = x^2 - 2x + 1$についてnewton法を利用してコードを実行し解を求めた過程を
+            以下の表に示す。
+
+            \begin{table}[H]
+                \begin{center}
+                    \caption{$f(x) = x^2 - 2x + 1$の解の出力}
+                    \begin{tabular}{cccc} \hline
+                        繰り返し回数 & 近似値 & 絶対誤差 & 相対誤差 \\ \hline
+                        0 & 1.1000000000000001 & 0.1000000000000001 & 0.1000000000000001 \\
+                        1 & 1.0500000000000000 & 0.0500000000000000 & 0.0500000000000000 \\
+                        2 & 1.0250000000000006 & 0.0250000000000006 & 0.0250000000000006 \\
+                        3 & 1.0124999999999988 & 0.0124999999999988 & 0.0124999999999988 \\
+                        4 & 1.0062499999999950 & 0.0062499999999950 & 0.0062499999999950 \\
+                        5 & 1.0031249999999954 & 0.0031249999999954 & 0.0031249999999954 \\
+                        6 & 1.0015624999999946 & 0.0015624999999946 & 0.0015624999999946 \\
+                        7 & 1.0007812499999749 & 0.0007812499999749 & 0.0007812499999749 \\
+                        8 & 1.0003906250000247 & 0.0003906250000247 & 0.0003906250000247 \\
+                        9 & 1.0001953125001395 & 0.0001953125001395 & 0.0001953125001395 \\
+                        10 & 1.0000976562501183 & 0.0000976562501183 & 0.0000976562501183 \\
+                        11 & 1.0000488281251319 & 0.0000488281251319 & 0.0000488281251319 \\
+                        12 & 1.0000244140632435 & 0.0000244140632435 & 0.0000244140632435 \\
+                        13 & 1.0000122070303643 & 0.0000122070303643 & 0.0000122070303643 \\
+                        14 & 1.0000061035110224 & 0.0000061035110224 & 0.0000061035110224 \\
+                        15 & 1.0000030517538190 & 0.0000030517538190 & 0.0000030517538190 \\
+                        16 & 1.0000015258743711 & 0.0000015258743711 & 0.0000015258743711 \\ 
+                        17 & 1.0000007629151879 & 0.0000007629151879 & 0.0000007629151879 \\
+                        18 & 1.0000003814973588 & 0.0000003814973588 & 0.0000003814973588 \\ 
+                        19 & 1.0000001908810769 & 0.0000001908810769 & 0.0000001908810769 \\ \hline
+                    \end{tabular}
+                \end{center}
+                \label{3-3-解の出力1}
+            \end{table}
+
+            次に$f(x) = x^2 - 3x + 2$についてnewton法を利用してコードを実行して解を求めた過程を以下の表に示す。
+
+            \begin{table}[H]
+                \begin{center}
+                    \caption{$f(x) = x^2 - 3x + 2$の解の出力}
+                    \begin{tabular}{cccc} \hline
+                        繰り返し回数 & 近似値 & 絶対誤差 & 相対誤差 \\ \hline
+                        0 & 1.1000000000000001 & 0.1000000000000001 & 0.1000000000000001 \\
+                        1 & 0.9875000000000003 & 0.0124999999999997 & 0.0124999999999997 \\
+                        2 & 0.9998475609756097 & 0.0001524390243903 & 0.0001524390243903 \\
+                        3 & 0.9999999767694266 & 0.0000000232305734 & 0.0000000232305734 \\ \hline
+                    \end{tabular}
+                \end{center}
+                \label{3-4-解の出力2}
+            \end{table}
+
+            以上２つの表から$f(x) = x^2 - 2x + 1$のステップ数は$20$なのに対して$f(x) = x^2 - 3x + 3$の
+            収束までのステップ数は$4回$である。 \\
+            \hspace{1em}さて、このようにステップ数に差が出る理由として$f(x) = x^2 - 2x + 1$の解が重解であることが原因であると考える。
+            重解の場合、newton法の収束性は1次収束に近いものとなる。\cite{bi:1}しかし、重解でない場合は2次収束となる。これがステップ数の
+            違いにつながってくる。
+
+    \section*{演習4}
+        \subsection*{課題6}
+            \hspace{1em}まず導出過程を示す。
+            複素関数$z^2 + 1$について$z = x + iy$とするとこの複素関数の実部と虚部はそれぞれ$x^2 - y^2 + 1$、$2xy$
+            となる。よって考えるべき方程式は以下のようになる。
+
+            \begin{equation}
+                \left\{ \,
+                    \begin{aligned}
+                        & x^2 - y^2 + 1 = 0 \\
+                        & 2xy = 0
+                    \end{aligned}
+                \right.
+            \end{equation}
+
+            さて、ここでヤコビ行列の逆行列は次のようになる。
+
+            \begin{equation}
+                J(\boldsymbol{x})^{-1} = \frac{1}{2}\frac{1}{x^2 + y^2}
+                \begin{pmatrix}
+                    x & y \\
+                    -y & x
+                \end{pmatrix}
+            \end{equation}
+
+            このことから多変数のnewton法の値の更新項は以下のようになる。
+
+            \begin{equation}
+                J^{-1}(\boldsymbol{x}^{(k)})\boldsymbol{f}(\boldsymbol{x}^{(k)}) = \frac{1}{2}\frac{1}{x^2 + y^2}
+                \begin{pmatrix}
+                    x^3 + xy^2 + x \\
+                    -3x^2y + y^3 - y 
+                \end{pmatrix}
+            \end{equation}
+
+            以上のようにして求めた多変数のnewton法の式をcで実装したコードを以下に載せる。
+
+            \begin{lstlisting}[caption=多変数のnewton法の実装コード, label=code_5, language=c]
+                void mult_newton(double *initial_array) {
+                    double x = initial_array[0];
+                    double y = initial_array[1];
+
+                    int i = 0;
+
+                    while(fabs(x*x - y*y + 1) > Epsilon && fabs(2*x*y) > Epsilon) {
+                        printf("%d: x=%1.16f y=%1.16f\n", i, x, y);
+
+                        x = x - (x*x*x - x*y*y + x + 2*x*y*y) / 2*(x*x + y*y);
+                        y = y - (-x*x*y - 2*x*y*y + y*y*y - y) / 2*(x*x + y*y);
+                        i++;
+                    }
+
+                        initial_array[0] = x;
+                        initial_array[1] = y;
+                    }
+
+                    void practice6() {
+                        double initial_array[2] = {0.1, 1.1};
+                        mult_newton(initial_array);
+                        printf("answer: x=%1.16f y=%1.16f\n", initial_array[0], initial_array[1]);
+                    }
+
+
+                    int main ( void )
+                    {
+                        practice6();
+                        return 0;
+                    }
+            \end{lstlisting}
+
+            \hspace{1em}ここでは初期値を$\boldsymbol{x} = (0.1, 1.1)$としてnewton法を適用した。
+            このコードで得た解は$\boldsymbol{x}=(-0.0000000000000001 ,0.9999999999999989)$である。
+
+    \section*{演習5}
+        \subsection*{課題7}
+            \hspace{1em}まず割線法を実装したcのコードを以下に記す。
+            \begin{lstlisting}[caption=割線法の実装コード, label=code_6, language=c]
+                #include <stdio.h>
+                #include <stdlib.h>
+                #include <math.h>
+                #define Epsilon ( 1e-14 )
+
+                double scant(double (*f)(double), double initial_x0, double initial_x1, double epsilon) {
+                    double x0 = initial_x0;
+                    double x1 = initial_x1;
+                    double x2 = x1;
+                    int counter = 0;
+
+                    while(fabs(f(x2)) > epsilon) {
+                        printf("%d: %1.16f\n", counter, x2);
+                        x2 = x1 - f(x1)*(x1 - x0) / (f(x1) - f(x0));
+                        x0 = x1;
+                        x1 = x2;
+                        counter++;
+                    }
+
+                    return x2;
+
+                }
+
+                int main() {
+                    double f(double x) {
+                        return sin(x);
+                    }
+
+                    double initial_x0 = 3.0;
+                    double initial_x1 = 3.1;
+                    double x2 = scant(f, initial_x0, initial_x1, Epsilon);
+
+                    printf("answer = %1.16f\n", x2);
+
+                    return 0;
+                }
+            \end{lstlisting}
+
+            \hspace{1em}まず割線法を実行している過程をいかに載せる。
+            \begin{table}[H]
+                \begin{center}
+                    \caption{割線法の実行途中の様子}
+                    \begin{tabular}{ccc} \hline
+                        繰り返し回数 & 近似値 \\ \hline
+                        0 & 3.1000000000000001 \\
+                        1 & 3.1417730920085423 \\
+                        2 & 3.1415926017802254 \\ \hline
+                    \end{tabular}
+                \end{center}
+            \end{table}
+
+            最終的には$x = 3.1415926535897936$を得た。ここで課題3で求めたときのステップ数と比較すると
+            ステップ数に違いがないことが分かる。これはnewton法の収束性と割線法の収束性によると考えられる。
+            newton法は2次収束するのに対して、割線法は1.6次収束する。今回は繰り返しの数が小さかったため両者の
+            収束速度に大きな違いがなかったため違いが出なかったと考えられる。しかし、より多くのステップ数を刻めば
+            収束速度に大きな違いが出てくると考えられる。
+
+
+
+
+    参考文献
+    \begin{thebibliography}{99}
+        \bibitem{bi:1} 著者: 宇宙理学専攻、 サイト名: ニュートン法、 URL: \url{https://www.ep.sci.hokudai.ac.jp/~gfdlab/comptech/y2011/resume/0526/2011_0526-ogihara.pdf}
+    \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}

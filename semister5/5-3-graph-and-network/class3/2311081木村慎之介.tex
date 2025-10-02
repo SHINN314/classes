@@ -1,0 +1,233 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% lstlistingのsetting
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+% タイトル
+\begin{center}
+{\Large{\bf グラフとネットワーク第3回課題}} \\
+{\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
+{\bf 2311081 木村慎之介} \\
+\end{center}
+
+\section*{課題1}
+\hspace{1em}推移律についての証明を行う。 \\
+\hspace{1em}グラフ\(G = (V, E)\)が与えられたときに任意に\(u, v, w \in V\)を取ってきて\(u \sim v\)と\(v \sim w\)を仮定する。
+このとき\(u\)から\(v\)、\(v\)から\(w\)の道をそれぞれ
+
+\begin{gather*}
+  L_1 : u_0 u_1 \cdots u_k (u_0 = u, u_k = v) \\
+  L_2 : w_0 w_1 \cdots w_l (w_0 = v, w_k = w)
+\end{gather*}
+
+\noindent と表す。 \\
+\hspace{1em}さて、\(v\)と\(w\)の道を逆にたどりながら次の頂点を見つける。
+すなわち、\(v\)と\(w\)の道に含まれる頂点の中で初めて\(u\)と\(v\)の道に含まれる頂点である。
+この頂点を\(z\)と置く。
+なおこの頂点\(z\)は必ず存在する。
+これは頂点\(v\)が\(L_1\)と\(L_2\)の両方に存在することからわかる。この\(z\)を用いて次の歩道をつくる。
+
+\begin{equation*}
+  L_3 : u_0 u_1 \cdots z \cdots w_{l-1} w_l
+\end{equation*}
+
+この歩道は道である。なぜなら過程から\(u_0 u_1 \cdots z\)と\(z \cdots w_{l-1} w_l\)は道であり、頂点\(z\)のとり方から頂点\(z\)以降に通る\(L_3\)の任意の頂点は道\(u_0 u_1 \cdots z\)に含まれないからである。
+そしてこの道は\(u\)と\(w\)をつなぐ道であるから\(u \sim w\)が示される。
+故に推移律が成立する。
+
+\section*{課題2}
+\hspace{1em}グラフ\(G\)に対して\(g(G) \leq 2\text{diom}(G) + 1\)を示す。
+そのために以下3つの補題を先に示す。
+
+\subsection*{補題1}
+\hspace{1em}最初の補題は以下の内容である。
+
+\begin{tcolorbox}
+  グラフ\(G = (V, E)\)と\(G\)の誘導部分グラフ\(G' = (V', E')\)の直径の間には次の不等式が成立する。
+  \begin{equation*}
+    \text{diam}(G) \geq \text{diam}(G')
+  \end{equation*}
+\end{tcolorbox}
+
+証明は以下のとおりである。\\
+\hspace{1em}\(G'\)の直径を与える2頂点を\(u, v \in V'\)とする。
+このとき、誘導グラフの定義より\(V' \subset V\)であることから\(u, v \in V\)であることがわかる。
+更に直径の定義から任意の\(w, z \in V\)に対して\(\text{diam}(G) \geq \text{d}(w, z)\)が成立する。
+以上より\(\text{diam}(G) \geq \text{d}(u, v) = \text{diam}(G')\)が成立する。
+
+\subsection*{補題2}
+\hspace{1em}次の補題は以下の内容である。
+
+\begin{tcolorbox}
+  閉路グラフ\(G\)が\(v_1 v_2 \cdots v_k v_{k+1} (v_1 = v_{k+1})\)と与えられたとき、\(v_1\)から任意に選んできた頂点\(v_i\)との距離は
+  \begin{equation*}
+    d(v_1, v_i) = \min(i-1, k+1-i)
+  \end{equation*}
+  となる。
+\end{tcolorbox}
+
+証明は以下の通りである。\\
+\hspace{1em}\(v_1\)から\(v_i\)へ同じ道を通らずに行く方法は2通りある。
+一つは\(v_1 v_2 \cdots v_i\)と\(v_1\)から順番に向かう方法。
+もう一つは\(v_{k+1} v_k \cdots v_i\)と\(v_{k+1}\)から逆順に向かう方法である。
+前者の方法では通った辺の数は\(i-1\)となり、後者の方法では通った辺の数は\(k+1-i\)となる。
+距離はこの内通った辺の数が最小となるものであるから\(\text{d}(v_1, v_i) = \min(i-1, k+1-i)\)が示される。
+
+\subsection*{補題3}
+\hspace{1em}最後の補題は以下の内容である。
+\begin{tcolorbox}
+  サイズ\(k\)の閉路グラフ\(G = (E, V)\)の直径について以下の不等式が成立する。
+  \begin{equation*}
+    \text{diam}(G) \geq \frac{k}{2}-\frac{1}{2}
+  \end{equation*}
+\end{tcolorbox}
+
+証明は以下のとおりである。\\
+\hspace{1em}まず閉路の直径を考えるにあたっては閉路の対称性より、閉路上のある1つの頂点を固定して、その頂点からの距離が最大となるものを考えれば良い。
+閉路が\(L: v_1 v_2 \cdots v_k v_{k+1} (v_1 = v_{k+1})\)と与えられたとき、\(v_1\)で固定して\(v_1\)からの距離が最大となるときの値を求める。
+補題2より\(v_1\)と任意に選んできた頂点\(v_i \in V\)との距離は
+
+\begin{equation*}
+  d(v_1, v_i) = \min(i-1, k+1-i)
+\end{equation*}
+
+\noindent となる。
+ここで\(i-1\)は\(i\)について単調増加、\(k+1-i\)は\(i\)について単調減少であることに留意する。
+このとき\(i-1 = k+1-i\)となるのは\(i = \frac{k}{2}+1\)を満たすときであるから、\(\text{d}(v_1, v_i)\)は\(i = \frac{k}{2}+1\)のときに最大値を取る。
+以下\(k\)が偶数のときと奇数のときで場合分けして閉路の直径について考える。\\
+\hspace{1em}\(k\)が偶数のとき、\(k=2l (l \in \mathbb{N}, l \geq 2)\)と表すと、等号が成立するときの\(i\)の値は\(i = l+1\)であるから
+
+\begin{align*}
+  \text{diam}(G) &= \text{d}(v_1, v_{l+1}) \\
+                 &= l \\
+                 &= \frac{k}{2} 
+\end{align*}
+
+\noindent となる。
+
+\hspace{1em}\(k\)が奇数のとき、\(k = 2l+1 (l \in \mathbb{N}, l \geq 1)\)と表すと等号が成立するときの\(i\)の値は\(i = l+\frac{3}{2}\)であるが、このとき\(i \notin \mathbb{N}\)となる。
+よって\(v_1\)からの距離が最大となる\(i \in \mathbb{N}\)として別のものを持ってくる必要がある。
+先程の\(i-1\)の単調増加性と\(k+1-i\)の単調減少性を踏まえると、\(i\)として\(l+1, l+2\)を取ってくることができる。
+この2つの\(i\)についてそれぞれ\(v_1\)からの距離を計算すると
+
+\begin{align*}
+  \text{d}(v_1, v_{l+1}) &= \min(l,2l+2-(l+1)) \\
+                         &= l \\
+  \text{d}(v_1, v_{l+2}) &= \min(l+2-1, 2l+2-(l+2)) \\
+                         &= l
+\end{align*}
+
+\noindent となり両方とも距離が\(l\)となる。故に
+
+\begin{align*}
+  \text{diam}(G) &= \text{d}(v_1, v_{l+1}) \\
+                 &= \text{d}(v_1, v_{l+2}) \\
+                 &= l \\
+                 &= \frac{k}{2}-\frac{1}{2}
+\end{align*}
+
+\noindent となる。したがって\(\text{diam}(G) \geq \frac{k}{2}-\frac{1}{2}\)が成立する。 \\
+
+\subsection*{命題の証明}
+\hspace{1em}以上の議論を踏まえて\(g(G) \leq 2\text{diam}(G)+1\)を証明する。\\
+\hspace{1em}グラフ\(G\)が与えられたとき、\(G\)に含まれる長さ\(g(G)\)の閉路を\(G'\)と置く。
+このとき\(G'\)は\(G\)の誘導部分グラフであることと\(G'\)が閉路であることから次の不等式が成立する。
+
+\begin{align*}
+  \text{diam}(G) &\geq \text{diam}(G') \text{\ (補題1より)} \\
+                 &\geq \frac{g(G)}{2} - \frac{1}{2} \text{\ (補題3より)} \\
+\end{align*}
+
+\noindent 以上で得られた式において、両辺2倍して1を移行すれば\(g(G) \leq 2\text{diam}(G)+1\)が得られる。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\numberwithin{equation}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+%\def\thesection{付録\Alph{section}}
+\makeatletter 
+\newcommand{\section@cntformat}{付録 \thesection:\ }
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\end{document}

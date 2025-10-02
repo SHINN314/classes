@@ -1,0 +1,95 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+    % タイトル
+    \begin{center}
+        {\Large{\bf 形式言語理論 講義11宿題}} \\
+        {\bf 2311081 木村慎之介} \\
+    \end{center}
+
+    \hspace{1em}2つの\(\text{DFA}\ A_1, A_2\)が与えられた時、そのどちらにも受理されない文字列\(w\)が存在するか、すなわち命題\(\exists w \in \Sigma^*\ [\ w \notin L(A_1) \land w \notin L(A_2)\ ]\)の真偽を判定するアルゴリズムは以下のようになる。 \\
+    \indent まず\(L(A_1) \cup L(A_2)\)を受理する\(\lambda\text{-NFA}\ N_1\)を作成する。
+    この\(N_1\)は新しい初期状態\(s_1\)から\(A_1,A_2\)それぞれの初期状態に\(\lambda\)遷移でつなぐことで得られる。
+    このとき、\(N_1\)の状態の集合\(Q_{N1}\)は\(N_1\)の初期状態\(s_1\)と、\(A_1,A_2\)それぞれの状態集合\(Q_{A1},Q_{A2}\)を用いて\(Q_{N1} = \{s_1\} \cup Q_{A1} \cup Q_{A2}\)となる。
+    次に\(N_1\)のすべての状態に対して、受理状態か否かを反転させた\(\lambda\text{-NFA}\ N_2\)を作成する。
+    この\(N_2\)の状態集合\(Q_{N2}\)は\(Q_{N1}\)と等しい。
+    最後に得られた\(N_2\)に対して、\(L(N_2)\)が空集合か否かを判定する。
+    もし空集合ならば題意を満たす文字列は存在せず、空集合出ないならば逆に題意を満たす文字列が存在する。
+    これは\(N_2\)が\(N_1\)の受理する言語\(L(A_1) \cup L(A_2)\)の補集合である\(\overline{L(A_1) \cup L(A_2)} = \overline{L(A_1)} \cap \overline{L(A_2)}\)を受理するため、\(N_2\)の受理する言語\(L(N_2)\)が空集合であるか否かという命題が\(w \notin L(A_1) \land w \notin L(A_2)\)となる文字列\(w\)が存在するかという命題と同値であることに起因する。 \\
+    \indent 以上でアルゴリズムは設計できたため、以降では計算量の見積もりを行う。\\
+    \indent まず\(N_1\)を作成するところでは、状態(\(N_1\)の初期状態)を追加して、そこから\(A_1,A_2\)のそれぞれの初期状態に対して\(\lambda\)遷移を繋げばいいので\(\order{1}\)となる。
+    次に\(N_2\)を作り出す操作では、各状態に対して受理状態か否かの反転作業を行う必要があるため計算量は\(\order{|Q_{N1}|} = \order{1 + |Q_{A1}| + |Q_{A2}|}\)となる。
+    最後に、\(N_2\)の受理する言語\(L(N_2)\)が空集合か否かを判定するアルゴリズムの計算量は、\(\lambda\text{-NFA}\)の状態数の二乗になることから\(\order{(Q_{N2})^2} = \order{(1 + |Q_{A1}| + |Q_{A2}|)^2}\)となる。
+    以上より全体の計算量は\(\order{(1 + |Q_{A1}| + |Q_{A2}|)^2}\)となる。
+
+    %参考文献
+    % \begin{thebibliography}{99}
+    %     \bibitem{bi:1} これこれ
+    % \end{thebibliography}
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \appendix
+    \setcounter{figure}{0}
+    \setcounter{table}{0}
+    \numberwithin{equation}{section}
+    \renewcommand{\thetable}{\Alph{section}\arabic{table}}
+    \renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+    %\def\thesection{付録\Alph{section}}
+    \makeatletter 
+    \newcommand{\section@cntformat}{付録 \thesection:\ }
+    \makeatother
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+\end{document}
