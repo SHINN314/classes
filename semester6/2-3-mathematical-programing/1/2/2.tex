@@ -1,0 +1,35 @@
+\section{選択問題}
+\subsection{問1}
+\hspace{1em}許容解が存在しない最適化問題(最小化問題)として以下の例が考えられる。
+
+\begin{equation}
+    \left\{
+        \begin{aligned}
+            &   \text{目的関数: } f(x, y) = x + y \\
+            &   \text{条件: } x \geq 0 \land x < 0
+        \end{aligned}
+    \right.\
+\end{equation}
+
+\noindent この最適化問題では条件をみたす\(x \in \mathbb{R}\)が存在しないため、題意をみたす最適化問題となっている。
+
+\subsection{問2}
+\hspace{1em}許容解は存在するが、最適解が存在しない最適化問題は存在する。
+例として、以下の最適化問題(最小化問題)が挙げられる。
+
+\begin{equation}
+    \left\{
+        \begin{aligned}
+            &   \text{目的関数: } f(x) = \frac{1}{x} \\
+            &   \text{条件: } S = \{ x \in \mathbb{R} | x \geq 1\}
+        \end{aligned}
+    \right.\
+\end{equation}
+
+この最適化問題の許容解としては\(x = 1\)などが挙げられる。
+しかし、どのような\(x \in S\)に対しても\(f(x) > f(x + 1)\)となる。
+つまり\(f(x)\)よりも小さい目的関数値が存在するため最適解は存在しない。
+
+\subsection{問3}
+\hspace{1em}最適解は存在するが、許容解が存在しない最適化問題は存在しない。
+なぜならば、最適解の定義から最適解自信が許容解となっているからである。
