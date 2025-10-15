@@ -1,0 +1,211 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{amsfonts}
+
+% lstlistingのsetting
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% theories setting (for japanese language)
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{thm}{定理}[section]
+\newtheorem{lem}[thm]{補題}
+\newtheorem{prop}[thm]{命題}
+\newtheorem{cor}[thm]{系}
+\newtheorem{ass}[thm]{仮定}
+\newtheorem{conj}[thm]{予想}
+\newtheorem{dfn}[thm]{定義}
+\newtheorem{rem}[thm]{注}
+
+\newtheorem*{thm*}{定理}
+\newtheorem*{lem*}{補題}
+\newtheorem*{prop*}{命題}
+\newtheorem*{cor*}{系}
+\newtheorem*{ass*}{仮定}
+\newtheorem*{conj*}{予想}
+\newtheorem*{dfn*}{定義}
+\newtheorem*{rem*}{注}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+
+% proof enviroment
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item\relax
+  {\bfseries
+  #1\@addpunct{.}}\hspace\labelsep\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+% タイトル
+\begin{center}
+{\Large{\bf 経済学B 第2講課題}} \\
+{\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
+{\bf 2311081 木村慎之介} \\
+\end{center}
+
+\section{設問1}
+\hspace{1em}産出量ベクトル\(X\)、最終需要ベクトル\(F\)、投入係数行列\(A\)の間には以下の関係式が成立している。
+
+\begin{align}
+    X   &= AX + F \\
+    \Delta X    &= A\Delta X + \Delta F
+\end{align}
+
+\noindent 以上の式を用いて雇用量の変化量を求めた。
+まず、投入係数行列を計算した。
+計算結果は以下のようになった。
+
+\begin{equation}
+    A   = \begin{bmatrix}
+        0.5     & 0.15 \\
+        0.4     & 0.45
+    \end{bmatrix}
+\end{equation}
+
+\noindent 次に問題分から最終需要量の変化ベクトル\(\Delta F\)を求めると以下のようになった。
+
+\begin{equation}
+    \Delta F = \begin{bmatrix}
+        10 \\
+        0
+    \end{bmatrix}
+\end{equation}
+
+\noindent 以上のベクトル、行列と関係式を用いて算出力の変化ベクトルを求めると以下のようになった。
+
+\begin{align}
+    \Delta X    &= (I - A)^{-1}\Delta F \\
+                &= \frac{1}{43}\begin{bmatrix}
+                    110     & 30 \\
+                    80      & 100 \\
+                \end{bmatrix}
+                \begin{bmatrix}
+                    10 \\
+                    0
+                \end{bmatrix} \\
+                &= \frac{1}{43} \begin{bmatrix}
+                    1100 \\
+                    800
+                \end{bmatrix}
+\end{align}
+
+\noindent 次に雇用係数\(L\)を求めた。
+求めた結果は以下のようになった。
+
+\begin{equation}
+    L = (l_1 \ l_2) = (0.4 \ 0.525)
+\end{equation}
+
+\noindent 以上の結果を用いて経済全体の雇用料の変化\(\Delta E\)を求めると以下のようになった。
+
+\begin{align}
+    \Delta E    &= L\Delta X \\
+                &= 20
+\end{align}
+
+\section{設問2}
+\subsection{ラスパイレス指数について}
+\hspace{1em}ラスパイレス指数とは、過去のある年の購入数量を固定したウェイトとして使用する指数である。
+この指数では基準年と同じ量のものを、現在の価格で買ったときの値段を示す。
+特徴としては、消費者の代替効果を考慮しないため、実際の物価変動より高めに評価される傾向にある。
+消費者物価指数などに使われている。
+
+\subsection{パーシェ指数}
+\hspace{1em}パーシェ指数とは現在の購入数量をウェイトとして使用する指数である。
+この指数では比較年と同じものを過去の価格で買うといくらになったかを示す。
+特徴としてはウェイトが毎年変わるため計算に手間がかかってしまう。
+また、代替効果の影響を受けやすく物価変動を実際より低めに評価される傾向にある。
+GDPデフレータなどに使われる。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\numberwithin{equation}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+%\def\thesection{付録\Alph{section}}
+\makeatletter 
+\newcommand{\section@cntformat}{付録 \thesection:\ }
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\end{document}
