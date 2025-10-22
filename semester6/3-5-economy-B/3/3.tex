@@ -116,13 +116,13 @@
 \begin{document}
 % タイトル
 \begin{center}
-{\Large{\bf 経済学B 第2講課題}} \\
+{\Large{\bf 経済学B 第3講課題}} \\
 {\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
 {\bf 2311081 木村慎之介} \\
 \end{center}
 
 \section{問題1}
-\hspace{1em}以下の条件をもとに税率\(t\)を求める。
+\hspace{1em}条件\(G = 50, B = 20\)と以下の式をもとに税率\(t\)を求めた。
 
 \begin{empheq}[left=\empheqlbrace]{align}
     Y   &= C + I + G \\
@@ -130,9 +130,70 @@
     I   &= 41 \\
     T   &= tY \\
     T   &= G + B \\
-    G   &= 50 \\
-    B   &= 20
 \end{empheq}
+
+\noindent まず条件と式(5)から
+
+\begin{align}
+    T   &= G + B \\
+    T   &= 70
+\end{align}
+
+\noindent と求まる。
+次に求めた\(T\)の値と式(1)(2)を用いて\(Y\)を求めた。
+そのために\(Y\)を\(C\)の関数として表した。
+
+\begin{equation}
+    C = 0.9(Y - T) = 0.9(Y - 70)
+\end{equation}
+
+\noindent 以上の式を(1)に代入すると次のようになる。
+
+\begin{align}
+    Y   &= 0.9(Y - 70) + 41 + 50 \\
+    Y   &= 280
+\end{align}
+
+\noindent 最後に式(4)に代入して税率を求めると以下のようになった。
+
+\begin{align}
+    70  &= t \times 280 \\
+    t   &= 0.25
+\end{align}
+
+\section{問題2}
+\hspace{1em}まず与えられた条件をした。
+整理した結果は以下のようになった。
+
+\begin{empheq}[left=\empheqlbrace]{align}
+    Y   &= 400 \\
+    b   &= 0.8 \\
+    a   &= 20 \\
+    I   &= 40 \\
+    T   &= tY \\
+    T   &= G \\
+    Y   &= C + I + G
+\end{empheq}
+
+\noindent まず式(14)(18)(19)から税収と政府支出を以下のように求めた。
+
+\begin{equation}
+    T = G = 400t
+\end{equation}
+
+\noindent 次に消費関数が\(C = a + b(Y - T)\)であることから\(C\)に\(a, b, T, Y\)を代入することで\(C\)を\(t\)の式で以下のように表した。
+
+\begin{align}
+    C   &= 20 + 0.8(400 - 400t) \\
+    C   &= 340 -320t
+\end{align}
+
+最後に式(20)と今までに求めた値を用いることで以下のように税率を求めた。
+
+\begin{align}
+    400     &= (340 - 320t) + 40 + 400t \\
+    t       &= 0.25
+\end{align}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
