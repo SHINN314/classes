@@ -1,0 +1,168 @@
+\documentclass[uplatex,dvipdfmx,a4paper,10pt]{jsarticle}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[separate-uncertainty]{siunitx}
+\usepackage{physics}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{pdfpages}
+\usepackage{pxchfon}
+\usepackage{tikz}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{amsfonts}
+\usepackage{empheq}
+
+% lstlistingのsetting
+\lstset{
+    basicstyle={\ttfamily},
+    identifierstyle={\small},
+    commentstyle={\smallitshape},
+    keywordstyle={\small\bfseries},
+    ndkeywordstyle={\small},
+    stringstyle={\small\ttfamily},
+    frame={tb},
+    breaklines=true,
+    columns=[l]{fullflexible},
+    numbers=left,
+    xrightmargin=0zw,
+    xleftmargin=3zw,
+    numberstyle={\scriptsize},
+    stepnumber=1,
+    numbersep=1zw,
+    lineskip=-0.5ex
+}
+
+% tikz setting
+\usepackage{tikz}
+\usetikzlibrary{automata, intersections, calc, arrows, positioning, arrows.meta}
+
+% theories setting (for japanese language)
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{thm}{定理}[section]
+\newtheorem{lem}[thm]{補題}
+\newtheorem{prop}[thm]{命題}
+\newtheorem{cor}[thm]{系}
+\newtheorem{ass}[thm]{仮定}
+\newtheorem{conj}[thm]{予想}
+\newtheorem{dfn}[thm]{定義}
+\newtheorem{rem}[thm]{注}
+
+\newtheorem*{thm*}{定理}
+\newtheorem*{lem*}{補題}
+\newtheorem*{prop*}{命題}
+\newtheorem*{cor*}{系}
+\newtheorem*{ass*}{仮定}
+\newtheorem*{conj*}{予想}
+\newtheorem*{dfn*}{定義}
+\newtheorem*{rem*}{注}
+
+% \renewcommand{\rmdefault}{pplj}
+% \renewcommand{\sfdefault}{phv}
+
+\setlength{\textwidth}{165mm} %165mm-marginparwidth
+\setlength{\marginparwidth}{40mm}
+\setlength{\textheight}{225mm}
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{-3.5mm}
+% \setlength{\parindent}{0pt}
+
+\def\vector#1{\mbox{\boldmath $#1$}}
+\newcommand{\AmSLaTeX}{%
+ $\mathcal A$\lower.4ex\hbox{$\!\mathcal M\!$}$\mathcal S$-\LaTeX}
+\newcommand{\PS}{{\scshape Post\-Script}}
+\def\BibTeX{{\rmfamily B\kern-.05em{\scshape i\kern-.025em b}\kern-.08em
+ T\kern-.1667em\lower.7ex\hbox{E}\kern-.125em X}}
+\newcommand{\DeLta}{{\mit\Delta}}
+\renewcommand{\d}{{\rm d}}
+\def\wcaption#1{\caption[]{\parbox[t]{100mm}{#1}}}
+\def\rm#1{\mathrm{#1}}
+\def\tempC{^\circ \rm{C}}
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus .2ex}{\Large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}{-3.25ex plus -1ex minus -.2ex}{1.5ex plus .2ex}{\small\bf}}
+\makeatother
+
+\makeatletter
+\def\@seccntformat#1{\@ifundefined{#1@cntformat}%
+   {\csname the#1\endcsname\quad}%      default
+   {\csname #1@cntformat\endcsname}%    enable individual control
+}
+
+% proof enviroment
+\renewenvironment{proof}[1][\proofname]{\par
+  \pushQED{\qed}%
+  \normalfont \topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item\relax
+  {\bfseries
+  #1\@addpunct{.}}\hspace\labelsep\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother
+
+\newcommand{\tenexp}[2]{#1\times10^{#2}}
+
+
+\begin{document}
+% タイトル
+\begin{center}
+{\Large{\bf 経済学B 第5回課題}} \\
+{\bf 電気通信大学 Ⅰ類 コンピュータサイエンスプログラム 3年} \\
+{\bf 2311081 木村慎之介} \\
+\end{center}
+
+\section{課題1}
+\hspace{1em}理論値から判断すると、現実の株価は高すぎると言える。
+問題の条件と、株価の理論値の式から、理論的な株価の配当比率を計算すると以下のようになる。
+
+\begin{align}
+    p_t                 &= \frac{d_t}{r + \rho} \\
+                        &= \frac{d_t}{0.05 + 0} \\
+    \frac{p_t}{d_t}     &= 20
+\end{align}
+
+\noindent よって理論的な株価の配当比率は\(20\)である。
+ゆえに、現実の株価は高すぎると言える。
+
+\section{課題2}
+\subsection{設問1}
+\hspace{1em}トービンのq理論とは、企業の投資決定を説明するための理論である。
+q理論で使われるq値とは企業の市場価値を、保有する資産の再調達費用で割ることで求められる比率である。
+このqが1を上回る場合は、市場は企業の資産を割高と評価しており、新しい設備投資を行うことで、大きな価値を生み出すことができるため、投資が促進される。
+他方で、qの値が1を下回る場合は、市場価値が再調達費用を下回るため、企業は投資を抑制する。
+このように、q値は設備投資の変動を説明する上で重要な指標になっている。
+
+\subsection{設問2}
+\hspace{1em}企業が機会・設備と土地の2角資産を保有している場合は次の式にしたがってq値を求めれば良い。
+
+\begin{equation}
+    q    = \frac{\text{企業の市場価値}}{\text{機械・設備の再取得価額} + \text{土地の時価}}
+\end{equation}
+
+\noindent なお、今回は企業の負債がないため、分子の値はそのまま企業の市場価値(すなわち株式時価総額)として良い。
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\numberwithin{equation}{section}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+%\def\thesection{付録\Alph{section}}
+\makeatletter 
+\newcommand{\section@cntformat}{付録 \thesection:\ }
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\end{document}
